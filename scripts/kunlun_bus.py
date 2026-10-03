@@ -100,11 +100,17 @@ def fetch_doc_markdown(doc_id: str) -> str:
     return ""
 
 
-def send_im_notification(markdown_text: str):
-    """通过飞书 IM 向 Marshall Lee 手机端推送实时通知"""
+def send_im_notification(markdown_text: str, doc_url: str = None):
+    """通过飞书 IM 向 Marshall Lee 直送实时通知 (严格遵循：说明情况 + 附带直达文档 的标准逻辑)"""
     try:
         user_id = "ou_7867f380cf2848b3be9844bb62d33bd0"
-        run_lark_cli(["im", "+messages-send", "--as", "user", "--user-id", user_id, "--markdown", markdown_text])
+        footer = f"\n\n---\n🔗 **任务多维表格看板**: {BITABLE_CONFIG['wiki_url']}"
+        if doc_url:
+            footer += f"\n📄 **关联文档**: {doc_url}"
+        full_text = markdown_text
+        if "多维表格" not in full_text and "直达" not in full_text:
+            full_text += footer
+        run_lark_cli(["im", "+messages-send", "--as", "user", "--user-id", user_id, "--markdown", full_text])
     except Exception:
         pass
 
