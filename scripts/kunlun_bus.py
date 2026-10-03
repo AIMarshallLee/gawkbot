@@ -4,6 +4,7 @@
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -113,6 +114,30 @@ def send_im_notification(markdown_text: str, doc_url: str = None):
         run_lark_cli(["im", "+messages-send", "--as", "user", "--user-id", user_id, "--markdown", full_text])
     except Exception:
         pass
+
+
+def upload_artifact_to_feishu(file_path: str, wiki_node_token="KoW3w4nogivUL3kRPkWcpKTtncc") -> dict:
+    """将大体积构建安装包直接上传至飞书云盘并获取直达下载链接"""
+    if not os.path.exists(file_path):
+        return {"ok": False, "error": f"文件不存在: {file_path}"}
+    file_name = os.path.basename(file_path)
+    print(f"[*] 正在将大文件上传至飞书云盘: {file_name}...")
+    res = run_lark_cli([
+        "drive", "+upload",
+        "--as", "user",
+        "--file", file_path,
+        "--wiki-token", wiki_node_token,
+    ])
+    if res.get("ok") and "data" in res:
+        data = res["data"]
+        url = data.get("url", "")
+        print(f"[PASS] 大文件已直传飞书云盘！")
+        print(f"  文件名: {file_name}")
+        print(f"  直达下载链接: {url}")
+        send_im_notification(f"📦 **大体积产物云盘直传就绪**\n- **产物名**: {file_name}\n- **大小**: {data.get('size', 0)} bytes\n- [立即点击下载]({url})")
+        return {"ok": True, "url": url, "data": data}
+    print(f"[FAIL] 上传云盘失败: {res.get('error')}")
+    return {"ok": False, "error": res.get("error")}
 
 
 def append_to_doc(doc_id: str, markdown_content: str) -> bool:
@@ -502,6 +527,11 @@ def main():
     p_base_add.add_argument("--action", required=True, help="执行动作")
     p_base_add.add_argument("--task-id", help="自定义任务ID")
 
+    # upload-artifact
+    p_upload = subparsers.add_parser("upload-artifact", help="将大体积构建安装包直传飞书云盘并获取下载链接")
+    p_upload.add_argument("--file", required=True, help="本地文件路径")
+    p_upload.add_argument("--wiki-token", default="KoW3w4nogivUL3kRPkWcpKTtncc", help="飞书 Wiki 资产库节点 Token")
+
     args = parser.parse_args()
     if args.command == "status":
         cmd_status(args)
@@ -517,6 +547,8 @@ def main():
         cmd_base_list(args)
     elif args.command == "base-add":
         cmd_base_add(args)
+    elif args.command == "upload-artifact":
+        upload_artifact_to_feishu(args.file, args.wiki_token)
     else:
         parser.print_help()
 
