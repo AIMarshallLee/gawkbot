@@ -47,7 +47,7 @@ export function SaveButton({ label, onSave }: SaveButtonProps) {
       setTimeout(() => setState("idle"), 1500);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      showNotice(`Save failed: ${msg}`, "error");
+      showNotice(`Save failed · 保存失败：${msg}`, "error");
       setState("idle");
     }
   };
@@ -59,7 +59,7 @@ export function SaveButton({ label, onSave }: SaveButtonProps) {
         onClick={handle}
         disabled={state === "saving"}
       >
-        {state === "saving" ? "Saving..." : state === "saved" ? "Saved" : label}
+        {state === "saving" ? "Saving... · 正在保存…" : state === "saved" ? "Saved · 已保存" : label}
       </button>
     </div>
   );
@@ -89,12 +89,12 @@ export function KeyField({
           fontFamily: "var(--font-mono)",
           fontSize: 12,
         }}
-        placeholder={hasValue ? "•••••••• (set)" : placeholder}
+        placeholder={hasValue ? "•••••••• (set · 已设置)" : placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
       <span style={styles.keyStatus(hasValue)}>
-        {hasValue ? "Set" : "Not set"}
+        {hasValue ? "Set · 已设置" : "Not set · 未设置"}
       </span>
     </div>
   );

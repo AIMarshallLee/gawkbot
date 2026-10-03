@@ -20,6 +20,7 @@ import (
 
 	"golang.org/x/term"
 
+	"github.com/nex-crm/wuphf/internal/provider"
 	"github.com/nex-crm/wuphf/internal/runtimebin"
 )
 
@@ -50,6 +51,15 @@ func (l *Launcher) PreflightWeb() error {
 		}
 		return nil
 	}
+	if normalizeProviderKind(l.provider) == provider.KindAntigravity {
+		if _, err := exec.LookPath("agy"); err != nil {
+			return fmt.Errorf("antigravity CLI not found. Install the Antigravity CLI and ensure `agy` is on PATH")
+		}
+		return nil
+	}
+	if entry := provider.Lookup(normalizeProviderKind(l.provider)); entry != nil && !entry.Capabilities.PaneEligible {
+		return nil
+	}
 	if _, err := exec.LookPath("claude"); err != nil {
 		return fmt.Errorf("claude not found in PATH. Install Claude Code CLI first")
 	}
@@ -67,6 +77,9 @@ func (l *Launcher) LaunchWeb(webPort int) error {
 	}
 	l.mcpConfig = mcpConfig
 	l.webMode = true
+	if err := EnsureStandardWorkspaceHierarchy(l.cwd); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: ensure workspace hierarchy: %v\n", err)
+	}
 
 	killStaleBroker()
 

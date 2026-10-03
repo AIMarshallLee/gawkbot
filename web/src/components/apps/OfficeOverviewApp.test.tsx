@@ -149,14 +149,14 @@ describe("OfficeOverviewApp", () => {
         await screen.findByTestId("office-overview-app"),
       ).toBeInTheDocument();
 
-      expect(screen.getByText("Office overview")).toBeInTheDocument();
-      expect(screen.getByText("Active runs")).toBeInTheDocument();
-      expect(screen.getByText("Blocked tasks")).toBeInTheDocument();
-      expect(screen.getByText("Bots working now")).toBeInTheDocument();
-      expect(screen.getByText("Pending reviews")).toBeInTheDocument();
-      expect(screen.getByText("Compiled skills")).toBeInTheDocument();
-      expect(screen.getByText("Next scheduled routines")).toBeInTheDocument();
-      expect(screen.getByText("Recent artifacts")).toBeInTheDocument();
+      expect(screen.getByText("Office overview · 办公室概览")).toBeInTheDocument();
+      expect(screen.getByText("Active runs · 进行中的任务")).toBeInTheDocument();
+      expect(screen.getByText("Blocked tasks · 受阻任务")).toBeInTheDocument();
+      expect(screen.getByText("Bots working now · 正在工作的机器人")).toBeInTheDocument();
+      expect(screen.getByText("Pending reviews · 待审核")).toBeInTheDocument();
+      expect(screen.getByText("Compiled skills · 已编译技能")).toBeInTheDocument();
+      expect(screen.getByText("Next scheduled routines · 下次定时例程")).toBeInTheDocument();
+      expect(screen.getByText("Recent artifacts · 最近产物")).toBeInTheDocument();
 
       // Spot-check data in sections. Task titles, questions, etc. can appear
       // in multiple sections (active runs, recent artifacts, bot task label,
@@ -186,7 +186,7 @@ describe("OfficeOverviewApp", () => {
       render(wrap(<OfficeOverviewApp />));
 
       expect(
-        await screen.findByText("No tasks are running right now."),
+        await screen.findByText("No tasks are running right now. · 当前没有运行中的任务。"),
       ).toBeInTheDocument();
     });
 
@@ -194,7 +194,7 @@ describe("OfficeOverviewApp", () => {
       render(wrap(<OfficeOverviewApp />));
 
       expect(
-        await screen.findByText("Nothing is blocked. Bots are moving freely."),
+        await screen.findByText("Nothing is blocked. Bots are moving freely. · 当前没有受阻任务。"),
       ).toBeInTheDocument();
     });
 
@@ -264,7 +264,7 @@ describe("OfficeOverviewApp", () => {
 
       render(wrap(<OfficeOverviewApp />));
 
-      await screen.findByText("Active runs");
+      await screen.findByText("Active runs · 进行中的任务");
       expect(screen.queryByText("ollama")).not.toBeInTheDocument();
     });
 
@@ -288,11 +288,11 @@ describe("OfficeOverviewApp", () => {
       render(wrap(<OfficeOverviewApp />));
 
       expect(
-        await screen.findByText("1 provider connected"),
+        await screen.findByText("1 provider connected · 已连接"),
       ).toBeInTheDocument();
       expect(screen.getByText("Exo")).toBeInTheDocument();
-      expect(await screen.findByText("Settings")).toBeInTheDocument();
-      expect(screen.getByText("Provider Doctor")).toBeInTheDocument();
+      expect(await screen.findByText("Settings · 设置")).toBeInTheDocument();
+      expect(screen.getByText("Provider Doctor · 提供商诊断")).toBeInTheDocument();
     });
 
     it("does not show connected providers that are not configured", async () => {
@@ -314,7 +314,7 @@ describe("OfficeOverviewApp", () => {
 
       render(wrap(<OfficeOverviewApp />));
 
-      await screen.findByText("Active runs");
+      await screen.findByText("Active runs · 进行中的任务");
       expect(screen.queryByText(/provider.*connected/)).not.toBeInTheDocument();
       expect(screen.queryByText("Exo")).not.toBeInTheDocument();
     });
@@ -324,7 +324,7 @@ describe("OfficeOverviewApp", () => {
 
       render(wrap(<OfficeOverviewApp />));
 
-      await screen.findByText("Active runs");
+      await screen.findByText("Active runs · 进行中的任务");
       expect(screen.queryByText(/provider.*connected/)).not.toBeInTheDocument();
     });
   });

@@ -18,6 +18,7 @@ import type { OfficeMember } from "../../api/client";
 import { useDefaultHarness } from "../../hooks/useConfig";
 import { useOfficeMembers } from "../../hooks/useMembers";
 import { type HarnessKind, resolveHarness } from "../../lib/harness";
+import { bilingual } from "../../lib/bilingual";
 import { router } from "../../lib/router";
 import { HarnessBadge } from "../ui/HarnessBadge";
 import { PixelAvatar } from "../ui/PixelAvatar";
@@ -26,8 +27,8 @@ import { BotWizard, useBotWizard } from "./BotWizard";
 
 /** Short descriptors for the always-present default bots. */
 const DEFAULT_AGENT_HINT: Record<string, string> = {
-  cos: "Orchestrator — present on every task",
-  librarian: "Librarian — writes and organizes the wiki",
+  cos: "Orchestrator · 协调者 — present on every task · 参与每项任务",
+  librarian: "Librarian · 图书管理员 — writes and organizes the wiki · 编写并整理知识库",
 };
 
 function navigateToBot(slug: string): void {
@@ -38,7 +39,7 @@ function navigateToBot(slug: string): void {
 }
 
 function roleHint(agent: OfficeMember): string {
-  return DEFAULT_AGENT_HINT[agent.slug] ?? agent.role ?? "Specialist";
+  return DEFAULT_AGENT_HINT[agent.slug] ?? agent.role ?? bilingual("Specialist", "专家");
 }
 
 interface BotCardProps {
@@ -75,7 +76,7 @@ function BotCard({ agent, defaultHarness }: BotCardProps) {
       <span
         className={`agents-tool-card-status${isActive ? " is-active" : ""}`}
       >
-        {isActive ? "Working" : "Idle"}
+        {isActive ? bilingual("Working", "工作中") : bilingual("Idle", "空闲")}
       </span>
     </button>
   );
@@ -100,19 +101,19 @@ export function BotsTool() {
   return (
     <div className="app-panel active bots-tool" data-testid="agents-tool">
       <header className="agents-tool-header">
-        <h2 className="agents-tool-heading">Bots</h2>
+        <h2 className="agents-tool-heading">{bilingual("Bots", "机器人")}</h2>
         <button
           type="button"
           className="issues-new-btn issues-new-btn--header"
           onClick={wizard.show}
           data-testid="agents-tool-new-btn"
-          title="Create a new bot"
+          title={bilingual("Create a new bot", "新建机器人")}
         >
-          + New agent
+          + {bilingual("New bot", "新建机器人")}
         </button>
       </header>
       {ordered.length === 0 ? (
-        <p className="agents-tool-empty">No bots yet.</p>
+        <p className="agents-tool-empty">{bilingual("No bots yet.", "暂无机器人。")}</p>
       ) : (
         <div className="agents-tool-grid" data-testid="agents-tool-grid">
           {ordered.map((agent) => (
@@ -149,14 +150,14 @@ export function BotDetail({ agentSlug, tab }: BotDetailProps) {
     return (
       <div className="app-panel active bots-tool" data-testid="bot-detail">
         <div className="agents-tool-empty">
-          <p>No agent "{agentSlug}".</p>
+          <p>{bilingual(`No bot "${agentSlug}".`, `未找到机器人“${agentSlug}”。`)}</p>
           <button
             type="button"
             className="issues-new-btn"
             onClick={back}
             data-testid="bot-detail-back"
           >
-            ← Back to Bots
+            ← {bilingual("Back to Bots", "返回机器人")}
           </button>
         </div>
       </div>

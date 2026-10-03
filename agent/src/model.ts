@@ -28,7 +28,7 @@ export function ollamaModel(id = process.env.HARNESS_MODEL ?? "qwen2.5-coder:1.5
 
 /** The API key pi-ai should use for a model. Ollama needs only a placeholder. */
 export function apiKeyFor(model: Model<string>): string | undefined {
-	if (model.provider === "ollama") return "ollama";
+	if (model.provider === "ollama") return process.env.OLLAMA_API_KEY?.trim() || "ollama";
 	return undefined; // pi-ai resolves env keys / OAuth credentials itself
 }
 

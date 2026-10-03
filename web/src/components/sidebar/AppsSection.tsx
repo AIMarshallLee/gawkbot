@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Plus, Tools } from "iconoir-react";
 
 import { listApps } from "../../api/apps";
+import { bilingual } from "../../lib/bilingual";
 import { navigateToSidebarApp } from "../../lib/sidebarNav";
 import { useCurrentApp } from "../../routes/useCurrentRoute";
 import { useAppStore } from "../../stores/app";
@@ -86,7 +87,7 @@ export function AppsSection() {
 
   return (
     <SidebarSection
-      label="Apps"
+      label={bilingual("Apps", "应用")}
       open={open}
       onToggle={() => setOpen((prev) => !prev)}
       data-testid="sidebar-section-apps"
@@ -128,7 +129,7 @@ export function AppsSection() {
         ))}
         <SidebarItem
           icon={<Plus className="sidebar-item-icon" />}
-          label="Create app"
+          label={bilingual("Create app", "创建应用")}
           active={false}
           onClick={() => openCreateAppDialog()}
         />

@@ -125,6 +125,7 @@ const (
 	HeadlessProviderCodex        = "codex"
 	HeadlessProviderOpencode     = "opencode"
 	HeadlessProviderOpenAICompat = "openai-compat"
+	HeadlessProviderAntigravity  = "antigravity"
 )
 
 // pushHeadlessEvent serializes event as a single JSON line and writes it

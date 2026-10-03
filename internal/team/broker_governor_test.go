@@ -31,6 +31,22 @@ func newGovernorTestBroker(t *testing.T) *Broker {
 	return b
 }
 
+func TestGovernorStartsPausedWhenRequested(t *testing.T) {
+	for _, value := range []string{"", "1"} {
+		t.Run("startPaused="+value, func(t *testing.T) {
+			t.Setenv("WUPHF_START_PAUSED", value)
+			b := newGovernorTestBroker(t)
+			if got := b.GovernorStatus().Paused; got != (value == "1") {
+				t.Fatalf("paused = %v for WUPHF_START_PAUSED=%q", got, value)
+			}
+			b.GovernorResume()
+			if b.GovernorStatus().Paused {
+				t.Fatal("explicit resume should release the startup pause")
+			}
+		})
+	}
+}
+
 // TestGovernorNoteTurnAutoPauses is the regression test for the core gap: the
 // dispatch loop running with no cumulative checkpoint. With a 1-turn gate, the
 // first completed turn must pause dispatch and emit an SSE governor event.

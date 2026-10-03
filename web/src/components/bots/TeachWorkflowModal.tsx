@@ -42,6 +42,7 @@ import {
 } from "../../appdetail/apps/observeClient";
 import { useWindowEscape } from "../../hooks/useWindowEscape";
 import { directChannelSlug } from "../../lib/channels";
+import { Bilingual } from "../ui/Bilingual";
 import { buildBotWorkflowSeed } from "./teachWorkflowSeed";
 
 type Phase =
@@ -177,15 +178,19 @@ export function TeachWorkflowModal({
       <div className="teach-workflow-modal card" {...DIALOG_PROPS}>
         <div className="teach-workflow-head">
           <h2 className="teach-workflow-title" id="teach-workflow-title">
-            Teach {who} a workflow
+            <Bilingual
+              layout="inline"
+              en={`Teach ${who} a workflow`}
+              zh={`教授 ${who} 工作流程`}
+            />
           </h2>
           <button
             type="button"
             className="teach-workflow-close"
             onClick={close}
-            aria-label="Close teach a workflow"
+            aria-label="Close"
           >
-            Close
+            <Bilingual layout="inline" en="Close" zh="关闭" />
           </button>
         </div>
 
@@ -260,9 +265,11 @@ function CaptureFlow({
   return (
     <>
       <p className="teach-workflow-intro">
-        Share your screen and do the job the way you normally do it. {who} reads
-        the windows you are actually on, and you see everything that was read
-        before any of it is sent. Show it once. It will do it from now on.
+        <Bilingual
+          layout="stacked"
+          en={`Share your screen and do the job the way you normally do it. ${who} reads the windows you are actually on, and you see everything that was read before any of it is sent. Show it once. It will do it from now on.`}
+          zh={`共享您的屏幕，并像平常一样执行任务。${who} 将实时读取您操作的窗口，且在发送前您可以预览全部读取内容。只需演示一次，后续即可自动执行。`}
+        />
       </p>
 
       <label className="teach-workflow-field" htmlFor="teach-workflow-goal">
@@ -271,8 +278,9 @@ function CaptureFlow({
         </span>
         <input
           id="teach-workflow-goal"
+          aria-label={`What are you about to show ${who}?`}
           className="input"
-          placeholder="File the weekly expense report"
+          placeholder="File the weekly expense report · 例如：提交每周费用报表"
           value={goal}
           disabled={phase !== "idle"}
           onChange={(e) => onGoalChange(e.target.value)}
@@ -288,7 +296,7 @@ function CaptureFlow({
             onClick={onStart}
           >
             <Eye width={14} height={14} aria-hidden="true" />
-            Start screenshare
+            <Bilingual layout="inline" en="Start screenshare" zh="开始屏幕共享" />
           </button>
         </div>
       ) : null}
@@ -303,12 +311,15 @@ function CaptureFlow({
               : describeCapture(screens)}
           </div>
           <p className="teach-workflow-note">
-            Go do the job now, in the apps you normally use. Come back and press
-            Stop when you are done. Closing this window also stops the reading.
+            <Bilingual
+              layout="stacked"
+              en="Go do the job now, in the apps you normally use. Come back and press Stop when you are done. Closing this window also stops the reading."
+              zh="现在可以在常用应用中执行您的操作。完成后返回此处点击“停止屏幕共享”。关闭此窗口也会立即终止读取。"
+            />
           </p>
           <div className="teach-workflow-actions">
             <button type="button" className="btn btn-primary" onClick={onStop}>
-              Stop screenshare
+              <Bilingual layout="inline" en="Stop screenshare" zh="停止屏幕共享" />
             </button>
           </div>
         </div>
@@ -319,11 +330,19 @@ function CaptureFlow({
       {phase === "review" || phase === "sending" ? (
         <div className="teach-workflow-review">
           <p className="teach-workflow-note">
-            {screens.length === 0
-              ? "Nothing was read. No screens came back from the observer, so there is nothing to show " +
-                who +
-                ". Record again, or send just your description."
-              : "This is everything that was read. Nothing else goes with it."}
+            {screens.length === 0 ? (
+              <Bilingual
+                layout="stacked"
+                en={`Nothing was read. No screens came back from the observer, so there is nothing to show ${who}. Record again, or send just your description.`}
+                zh={`未读取到任何内容。观察器未捕获到屏幕，因此没有可展示给 ${who} 的内容。可重新录制，或仅发送文本描述。`}
+              />
+            ) : (
+              <Bilingual
+                layout="stacked"
+                en="This is everything that was read. Nothing else goes with it."
+                zh="以上为全部捕获的屏幕信息。不会附带任何其他多余数据。"
+              />
+            )}
           </p>
           <div className="teach-workflow-actions">
             <button
@@ -333,7 +352,7 @@ function CaptureFlow({
               onClick={onSend}
             >
               <Send width={14} height={14} aria-hidden="true" />
-              {phase === "sending" ? "Sending…" : `Send to ${who}`}
+              {phase === "sending" ? "Sending… · 正在发送…" : <Bilingual layout="inline" en={`Send to ${who}`} zh={`发送给 ${who}`} />}
             </button>
             <button
               type="button"
@@ -341,7 +360,7 @@ function CaptureFlow({
               disabled={phase === "sending"}
               onClick={onRecordAgain}
             >
-              Record again
+              <Bilingual layout="inline" en="Record again" zh="重新录制" />
             </button>
           </div>
         </div>
@@ -394,17 +413,19 @@ function Sent({
 }) {
   return (
     <div className="teach-workflow-result">
-      <div className="teach-workflow-result-title">Sent to {who}</div>
+      <div className="teach-workflow-result-title">
+        <Bilingual layout="inline" en={`Sent to ${who}`} zh={`已发送给 ${who}`} />
+      </div>
       <p className="teach-workflow-note">
-        {captured
-          ? `The screens that were read are now in your chat with ${who}.`
-          : `Your description is now in your chat with ${who}. No screens were read, so that is all it has to go on.`}{" "}
-        It will reply there with the steps it would take, and with the steps it
-        cannot run yet.
+        <Bilingual
+          layout="stacked"
+          en={`${captured ? `The screens that were read are now in your chat with ${who}.` : `Your description is now in your chat with ${who}. No screens were read, so that is all it has to go on.`} It will reply there with the steps it would take, and with the steps it cannot run yet.`}
+          zh={`${captured ? `读取到的屏幕步骤已发送到您与 ${who} 的私聊中。` : `您的描述已发送到您与 ${who} 的私聊中（未捕获屏幕）。`} 它将在私聊中回复准备采取的步骤及目前无法运行的步骤。`}
+        />
       </p>
       <div className="teach-workflow-actions">
         <button type="button" className="btn btn-primary" onClick={onDone}>
-          Open the chat
+          <Bilingual layout="inline" en="Open the chat" zh="打开私聊" />
         </button>
       </div>
     </div>
@@ -422,16 +443,22 @@ function NoObserver({
   return (
     <div className="teach-workflow-result">
       <div className="teach-workflow-result-title">
-        This computer cannot read your screen
+        <Bilingual
+          layout="inline"
+          en="This computer cannot read your screen"
+          zh="这台电脑无法读取您的屏幕"
+        />
       </div>
       <p className="teach-workflow-note">
-        Screen reading needs the cua runner, and it is not installed here, so
-        there is nothing to record with and nothing was captured. You can still
-        teach {who} the same job by describing it in the chat. That path works.
+        <Bilingual
+          layout="stacked"
+          en={`Screen reading needs the cua runner, and it is not installed here, so there is nothing to record with and nothing was captured. You can still teach ${who} the same job by describing it in the chat. That path works.`}
+          zh={`屏幕读取需要安装 cua runner，此环境尚未安装，因此无法录制任何屏幕。您仍可在聊天中向 ${who} 详细描述该任务，同样可以教会它。`}
+        />
       </p>
       <div className="teach-workflow-actions">
         <button type="button" className="btn btn-primary" onClick={onOpenChat}>
-          Describe it in chat
+          <Bilingual layout="inline" en="Describe it in chat" zh="在聊天中描述" />
         </button>
       </div>
     </div>
@@ -450,17 +477,43 @@ function TeachError({
   return (
     <div className="teach-workflow-result" role="alert">
       <div className="teach-workflow-result-title">
-        {sendFailed ? "This did not reach the bot" : "The reading stopped"}
+        {sendFailed ? (
+          <Bilingual
+            layout="inline"
+            en="This did not reach the bot"
+            zh="消息未送达机器人"
+          />
+        ) : (
+          <Bilingual
+            layout="inline"
+            en="The reading stopped"
+            zh="读取已停止"
+          />
+        )}
       </div>
       <p className="teach-workflow-note">
-        {sendFailed
-          ? "The screens that were read are still here, but the message did not send, so the bot has not seen any of it."
-          : "Nothing was captured and nothing was sent."}
+        <Bilingual
+          layout="stacked"
+          en={
+            sendFailed
+              ? "The screens that were read are still here, but the message did not send, so the bot has not seen any of it."
+              : "Nothing was captured and nothing was sent."
+          }
+          zh={
+            sendFailed
+              ? "已读取的屏幕信息仍保存在此处，但消息发送失败，机器人尚未收到。"
+              : "未捕获任何屏幕，未发送任何内容。"
+          }
+        />
         {failure.detail ? ` (${failure.detail})` : ""}
       </p>
       <div className="teach-workflow-actions">
         <button type="button" className="btn btn-primary" onClick={onRetry}>
-          {sendFailed ? "Back to what was read" : "Start over"}
+          {sendFailed ? (
+            <Bilingual layout="inline" en="Back to what was read" zh="返回已读取内容" />
+          ) : (
+            <Bilingual layout="inline" en="Start over" zh="重新开始" />
+          )}
         </button>
       </div>
     </div>

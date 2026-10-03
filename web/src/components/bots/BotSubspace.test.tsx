@@ -181,21 +181,21 @@ describe("<AgentSubspace>", () => {
     const labels = tabs.map((t) => t.textContent?.trim());
     // Knowledge sits next to Skills: both answer "what does this bot bring".
     expect(labels).toEqual([
-      "Chat",
-      "Computer",
-      "Tasks",
-      "Skills",
-      "Knowledge",
-      "Policies",
-      "Live Stream",
-      "Config",
+      "Chat · 聊天",
+      "Computer · 电脑",
+      "Tasks · 任务",
+      "Skills · 技能",
+      "Knowledge · 知识",
+      "Policies · 策略",
+      "Live Stream · 实时动态",
+      "Config · 配置",
     ]);
   });
 
   it("defaults to Chat tab (aria-selected=true on Chat)", () => {
     render(wrap(<BotSubspace agent={baseBot} tab="chat" />));
 
-    const chatTab = screen.getByRole("tab", { name: "Chat" });
+    const chatTab = screen.getByRole("tab", { name: "Chat · 聊天" });
     expect(chatTab).toHaveAttribute("aria-selected", "true");
   });
 
@@ -216,11 +216,11 @@ describe("<AgentSubspace>", () => {
   it("resolves the /live alias to the Live Stream tab (no silent Chat fallback)", () => {
     render(wrap(<BotSubspace agent={baseBot} tab="live" />));
 
-    expect(screen.getByRole("tab", { name: "Live Stream" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Live Stream · 实时动态" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
-    expect(screen.getByRole("tab", { name: "Chat" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Chat · 聊天" })).toHaveAttribute(
       "aria-selected",
       "false",
     );
@@ -244,10 +244,10 @@ describe("<AgentSubspace>", () => {
   it("marks the active tab as aria-selected", () => {
     render(wrap(<BotSubspace agent={baseBot} tab="tasks" />));
 
-    const tasksTab = screen.getByRole("tab", { name: "Tasks" });
+    const tasksTab = screen.getByRole("tab", { name: "Tasks · 任务" });
     expect(tasksTab).toHaveAttribute("aria-selected", "true");
 
-    const chatTab = screen.getByRole("tab", { name: "Chat" });
+    const chatTab = screen.getByRole("tab", { name: "Chat · 聊天" });
     expect(chatTab).toHaveAttribute("aria-selected", "false");
   });
 
@@ -255,7 +255,7 @@ describe("<AgentSubspace>", () => {
     const user = userEvent.setup();
     render(wrap(<BotSubspace agent={baseBot} tab="chat" />));
 
-    await user.click(screen.getByRole("tab", { name: "Tasks" }));
+    await user.click(screen.getByRole("tab", { name: "Tasks · 任务" }));
 
     expect(navigateMock).toHaveBeenCalledWith({
       to: "/agents/$agentSlug/$tab",
@@ -288,7 +288,7 @@ describe("<AgentSubspace>", () => {
     const panel = screen.getByTestId("bot-knowledge-panel");
     expect(panel).toBeInTheDocument();
     expect(panel).toHaveAttribute("data-agent", "planner");
-    expect(screen.getByRole("tab", { name: "Knowledge" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Knowledge · 知识" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -301,7 +301,7 @@ describe("<AgentSubspace>", () => {
   ])("resolves the /%s alias to the Knowledge tab", (alias) => {
     render(wrap(<BotSubspace agent={baseBot} tab={alias} />));
 
-    expect(screen.getByRole("tab", { name: "Knowledge" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Knowledge · 知识" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -314,7 +314,7 @@ describe("<AgentSubspace>", () => {
 
     const panel = screen.getByTestId("computer-tab");
     expect(panel).toHaveAttribute("data-agent", "planner");
-    expect(screen.getByRole("tab", { name: "Computer" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Computer · 电脑" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -326,7 +326,7 @@ describe("<AgentSubspace>", () => {
     "vm",
   ])("resolves the /%s alias to the Computer tab", (alias) => {
     render(wrap(<BotSubspace agent={baseBot} tab={alias} />));
-    expect(screen.getByRole("tab", { name: "Computer" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Computer · 电脑" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -345,7 +345,7 @@ describe("<AgentSubspace>", () => {
   it("falls back to chat tab for unknown tab value", () => {
     render(wrap(<BotSubspace agent={baseBot} tab="unknown-tab" />));
 
-    const chatTab = screen.getByRole("tab", { name: "Chat" });
+    const chatTab = screen.getByRole("tab", { name: "Chat · 聊天" });
     expect(chatTab).toHaveAttribute("aria-selected", "true");
     expect(screen.getByTestId("message-feed")).toBeInTheDocument();
   });
@@ -382,6 +382,8 @@ describe("<AgentSubspace>", () => {
     await user.click(screen.getByTestId("teach-workflow-btn"));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Teach Planner a workflow")).toBeInTheDocument();
+    expect(
+      screen.getByText("Teach Planner a workflow · 教授 Planner 工作流程"),
+    ).toBeInTheDocument();
   });
 });

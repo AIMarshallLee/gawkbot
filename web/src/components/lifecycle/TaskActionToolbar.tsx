@@ -42,10 +42,10 @@ function actionsForState(state: LifecycleState): ActionDef[] {
       return [
         {
           action: "cancel",
-          label: "Cancel",
+          label: "Cancel · 取消",
           variant: "danger",
           requiresReason: true,
-          reasonHint: "Why cancel? One short line.",
+          reasonHint: "Why cancel? One short line. · 请输入取消原因",
         },
       ];
     case "intake":
@@ -53,22 +53,22 @@ function actionsForState(state: LifecycleState): ActionDef[] {
       return [
         {
           action: "review",
-          label: "Mark ready for review",
+          label: "Mark ready for review · 标记准备就绪",
           variant: "primary",
         },
         {
           action: "block",
-          label: "Block",
+          label: "Block · 标记阻塞",
           variant: "neutral",
           requiresReason: true,
-          reasonHint: "What's blocking this?",
+          reasonHint: "What's blocking this? · 请输入阻塞原因",
         },
         {
           action: "cancel",
-          label: "Cancel",
+          label: "Cancel · 取消",
           variant: "danger",
           requiresReason: true,
-          reasonHint: "Why cancel? One short line.",
+          reasonHint: "Why cancel? One short line. · 请输入取消原因",
         },
       ];
     case "running":
@@ -76,27 +76,27 @@ function actionsForState(state: LifecycleState): ActionDef[] {
       return [
         {
           action: "submit_for_review",
-          label: "Submit for review",
+          label: "Submit for review · 提交审查",
           variant: "primary",
         },
         {
           action: "complete",
-          label: "Mark done",
+          label: "Mark done · 标记完成",
           variant: "primary",
         },
         {
           action: "block",
-          label: "Block",
+          label: "Block · 标记阻塞",
           variant: "neutral",
           requiresReason: true,
-          reasonHint: "What's blocking this?",
+          reasonHint: "What's blocking this? · 请输入阻塞原因",
         },
         {
           action: "cancel",
-          label: "Cancel",
+          label: "Cancel · 取消",
           variant: "danger",
           requiresReason: true,
-          reasonHint: "Why cancel? One short line.",
+          reasonHint: "Why cancel? One short line. · 请输入取消原因",
         },
       ];
     case "blocked":
@@ -111,15 +111,15 @@ function actionsForState(state: LifecycleState): ActionDef[] {
       return [
         {
           action: "resume",
-          label: "Force unblock",
+          label: "Force unblock · 强制解除阻塞",
           variant: "neutral",
         },
         {
           action: "cancel",
-          label: "Cancel",
+          label: "Cancel · 取消",
           variant: "danger",
           requiresReason: true,
-          reasonHint: "Why cancel? One short line.",
+          reasonHint: "Why cancel? One short line. · 请输入取消原因",
         },
       ];
     case "review":
@@ -127,15 +127,15 @@ function actionsForState(state: LifecycleState): ActionDef[] {
       return [
         {
           action: "approve",
-          label: "Approve",
+          label: "Approve · 批准",
           variant: "primary",
         },
         {
           action: "request_changes",
-          label: "Request changes",
+          label: "Request changes · 要求修改",
           variant: "neutral",
           requiresReason: true,
-          reasonHint: "What needs to change?",
+          reasonHint: "What needs to change? · 请输入需要修改的内容",
         },
       ];
     case "approved":
@@ -208,7 +208,7 @@ export function TaskActionToolbar({
     if (!pendingReason) return;
     const reason = pendingReason.reason.trim();
     if (!reason) {
-      setError("Reason is required for this action.");
+      setError("Reason is required for this action. · 此操作必须提供原因。");
       return;
     }
     statusMutation.mutate({
@@ -226,7 +226,7 @@ export function TaskActionToolbar({
         <StartParkedTaskButton
           taskId={taskId}
           onApproved={onAfterAction}
-          label="Parked — start"
+          label="Parked — start · 已搁置 — 启动"
         />
       ) : null}
 
@@ -255,7 +255,7 @@ export function TaskActionToolbar({
           disabled={statusMutation.isPending}
           data-testid="action-archive"
         >
-          Archive
+          Archive · 归档
         </button>
       ) : null}
 
@@ -276,7 +276,7 @@ export function TaskActionToolbar({
             type="text"
             className="issue-action-reason-input"
             value={pendingReason.reason}
-            placeholder={pendingReason.action.reasonHint ?? "Reason"}
+            placeholder={pendingReason.action.reasonHint ?? "Reason · 请输入原因"}
             onChange={(event) =>
               setPendingReason({
                 action: pendingReason.action,
@@ -309,7 +309,7 @@ export function TaskActionToolbar({
             onClick={() => setPendingReason(null)}
             disabled={statusMutation.isPending}
           >
-            Cancel
+            Cancel · 取消
           </button>
         </div>
       ) : null}

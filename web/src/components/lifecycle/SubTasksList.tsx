@@ -6,6 +6,7 @@ import { useOfficeMembers } from "../../hooks/useMembers";
 import { formatTaskTitleForDisplay } from "../../lib/taskTitle";
 import type { LifecycleState } from "../../lib/types/lifecycle";
 import { useAppStore } from "../../stores/app";
+import { Bilingual } from "../ui/Bilingual";
 import { TaskStatusDot } from "./TaskActivityStream";
 
 interface SubTasksListProps {
@@ -87,7 +88,7 @@ export function SubTasksList({ taskId, channel }: SubTasksListProps) {
     >
       <header className="issue-doc-sub-issues-header">
         <h3 className="issue-doc-sub-issues-heading">
-          Sub-tasks
+          <Bilingual layout="inline" en="Sub-tasks" zh="子任务" />
           {children.length > 0 ? (
             <span className="issue-doc-sub-issues-count">
               {" "}
@@ -102,14 +103,18 @@ export function SubTasksList({ taskId, channel }: SubTasksListProps) {
             onClick={() => setIsAdding(true)}
             data-testid="add-sub-issue-button"
           >
-            + Add sub-task
+            + Add sub-task · 添加子任务
           </button>
         ) : null}
       </header>
 
       {children.length === 0 && !isAdding ? (
         <p className="issue-doc-sub-issues-empty">
-          No sub-tasks. Break this down with the + button above.
+          <Bilingual
+            layout="stacked"
+            en="No sub-tasks. Break this down with the + button above."
+            zh="暂无子任务。点击上方“+”按钮进行任务拆分。"
+          />
         </p>
       ) : null}
 
@@ -173,12 +178,12 @@ export function SubTasksList({ taskId, channel }: SubTasksListProps) {
                 setError(null);
               }
             }}
-            placeholder="Sub-task title (Enter to add, Esc to cancel)"
+            placeholder="Sub-task title (Enter to add, Esc to cancel) · 子任务标题（回车添加，Esc取消）"
             disabled={addMutation.isPending}
             data-testid="sub-issue-title-input"
           />
           <label className="issue-doc-sub-issues-owner-label">
-            Owner
+            <Bilingual layout="inline" en="Owner" zh="负责人" />
             <select
               className="issue-doc-sub-issues-owner-select"
               value={draftOwner}
@@ -186,7 +191,7 @@ export function SubTasksList({ taskId, channel }: SubTasksListProps) {
               disabled={addMutation.isPending}
               data-testid="sub-issue-owner-select"
             >
-              <option value="">— unassigned —</option>
+              <option value="">— unassigned · 未分配 —</option>
               {assignableBots.map((agent) => (
                 <option key={agent.slug} value={agent.slug}>
                   @{agent.slug}
@@ -203,7 +208,7 @@ export function SubTasksList({ taskId, channel }: SubTasksListProps) {
               className="issue-doc-sub-issues-submit"
               disabled={!draftTitle.trim() || addMutation.isPending}
             >
-              {addMutation.isPending ? "Adding…" : "Add"}
+              {addMutation.isPending ? "Adding… · 正在添加…" : "Add · 添加"}
             </button>
             <button
               type="button"
@@ -216,7 +221,7 @@ export function SubTasksList({ taskId, channel }: SubTasksListProps) {
               }}
               disabled={addMutation.isPending}
             >
-              Cancel
+              Cancel · 取消
             </button>
           </div>
           {error ? (

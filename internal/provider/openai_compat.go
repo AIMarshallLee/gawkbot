@@ -168,7 +168,8 @@ func normalizeOpenAICompatEndpoint(baseURL string) string {
 		pathPart, queryPart = baseURL[:idx], baseURL[idx:]
 	}
 	pathPart = strings.TrimRight(pathPart, "/")
-	if !strings.HasSuffix(pathPart, "/v1") &&
+	if !strings.HasSuffix(pathPart, "/v1beta/openai") &&
+		!strings.HasSuffix(pathPart, "/v1") &&
 		!strings.Contains(pathPart, "/v1/") {
 		pathPart += "/v1"
 	}
@@ -187,6 +188,7 @@ var httpClientForOpenAICompat = func() *http.Client {
 	// (e.g. a Mac Studio over Wi-Fi) can bump via
 	// WUPHF_OPENAI_COMPAT_DIAL_TIMEOUT_SECONDS.
 	tr := &http.Transport{
+		Proxy:       http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{Timeout: openAICompatDialTimeout()}).DialContext,
 	}
 	return &http.Client{Transport: tr, Timeout: 0}
@@ -226,6 +228,9 @@ func setOpenAICompatProviderHeaders(req *http.Request, kind, botSlug string) {
 func resolveOpenAICompatAPIKey(kind string) string {
 	envKind := strings.ToUpper(strings.ReplaceAll(kind, "-", "_"))
 	if v := strings.TrimSpace(os.Getenv("WUPHF_" + envKind + "_API_KEY")); v != "" {
+		return v
+	}
+	if v := config.ResolveProviderAPIKey(kind); v != "" {
 		return v
 	}
 	if kind == KindHermesBot {

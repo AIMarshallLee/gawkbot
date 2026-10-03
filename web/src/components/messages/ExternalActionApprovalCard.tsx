@@ -9,6 +9,7 @@ import {
   GenericIntegrationLogo,
   ToolkitBrandLogo,
 } from "../apps/integrations/IntegrationLogos";
+import { TranslateButton } from "../ui/TranslateButton";
 
 // ExternalActionApprovalCard is the dedicated approval surface for a mutating
 // integration action the deterministic resolver classified as `approve`
@@ -148,10 +149,12 @@ export function ExternalActionApprovalCard({
   onDismiss,
 }: ExternalActionApprovalCardProps) {
   const [showRaw, setShowRaw] = useState(false);
+  const [translatedWhy, setTranslatedWhy] = useState<string | null>(null);
   const parsed = parseApprovalContext(request.context);
   const identity = deriveActionIdentity(request, parsed);
   const details = parsed?.details ?? [];
   const why = parsed?.why ?? null;
+  const displayWhy = translatedWhy ?? why;
   const account =
     request.action?.account?.name ?? parsed?.footer.account ?? null;
   const channel = parsed?.footer.channel ?? request.channel ?? null;
@@ -194,15 +197,21 @@ export function ExternalActionApprovalCard({
       ) : null}
 
       {why ? (
-        <p className="eac-why">
-          <span className="eac-why-label">Why</span>
-          <span className="eac-why-text">{why}</span>
-        </p>
+        <div className="eac-why">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <span className="eac-why-label">原因说明 · Why</span>
+            <TranslateButton
+              originalText={why}
+              onToggle={(_isZh, text) => setTranslatedWhy(text)}
+            />
+          </div>
+          <span className="eac-why-text">{displayWhy}</span>
+        </div>
       ) : null}
 
       <section className="eac-payload" aria-label="What will be sent">
         <div className="eac-payload-head">
-          <span className="eac-payload-title">What will be sent</span>
+          <span className="eac-payload-title">将要发送的内容 · What will be sent</span>
           {hasRaw ? (
             <button
               type="button"
@@ -210,14 +219,14 @@ export function ExternalActionApprovalCard({
               aria-pressed={showRaw}
               onClick={() => setShowRaw((v) => !v)}
             >
-              {showRaw ? "Hide raw" : "Show raw"}
+              {showRaw ? "隐藏报文 · Hide raw" : "查看原始报文 · Show raw"}
             </button>
           ) : null}
         </div>
 
         {!hasPayload ? (
           <p className="eac-payload-empty">
-            No structured payload — approve based on the action above.
+            无结构化内容 — 请根据上方操作直接审核。
           </p>
         ) : showRaw ? (
           <pre className="eac-raw mono">
@@ -231,7 +240,7 @@ export function ExternalActionApprovalCard({
                 <dd className="eac-field-value">
                   {detail.value}
                   {detail.truncated ? (
-                    <span className="eac-trunc">truncated</span>
+                    <span className="eac-trunc">截断</span>
                   ) : null}
                 </dd>
               </div>
@@ -249,13 +258,13 @@ export function ExternalActionApprovalCard({
         {account ? (
           <span className="eac-meta-item">
             <span className="eac-dot" aria-hidden="true" />
-            <span className="eac-meta-label">Account</span>
+            <span className="eac-meta-label">账号 · Account</span>
             <span className="mono">{account}</span>
           </span>
         ) : null}
         {channel ? (
           <span className="eac-meta-item">
-            <span className="eac-meta-label">Channel</span>#
+            <span className="eac-meta-label">频道 · Channel</span>#
             {channel.replace(/^#/, "")}
           </span>
         ) : null}
@@ -265,10 +274,11 @@ export function ExternalActionApprovalCard({
         <button
           type="button"
           className="btn btn-sm btn-primary"
+          aria-label="Approve"
           onClick={() => onAnswer("approve")}
           disabled={submitting}
         >
-          Approve
+          批准执行 · Approve
         </button>
         {grant ? (
           <button
@@ -278,16 +288,17 @@ export function ExternalActionApprovalCard({
             disabled={submitting}
             title={`Always allow @${grant.agentSlug} to run ${grant.actionId} on ${identity.platformName || grant.platform} without asking again`}
           >
-            Approve &amp; always allow
+            批准并总是允许 · Always allow
           </button>
         ) : null}
         <button
           type="button"
           className="btn btn-sm btn-ghost eac-reject"
+          aria-label="Reject"
           onClick={() => onAnswer("reject")}
           disabled={submitting}
         >
-          Reject
+          拒绝 · Reject
         </button>
         <button
           type="button"
@@ -295,7 +306,7 @@ export function ExternalActionApprovalCard({
           onClick={onDismiss}
           disabled={submitting}
         >
-          Dismiss
+          忽略 · Dismiss
         </button>
       </div>
     </div>

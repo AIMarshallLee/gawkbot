@@ -43,7 +43,7 @@ export function ReopenTaskButton({
         disabled={reopenMutation.isPending}
         data-testid="reopen-issue-button"
       >
-        {reopenMutation.isPending ? "Reopening…" : "Reopen task"}
+        {reopenMutation.isPending ? "Reopening… · 正在重新打开…" : "Reopen task · 重新打开任务"}
       </button>
       {error ? (
         <span className="issue-doc-reopen-error" role="alert">

@@ -121,3 +121,11 @@ gawkbot-testdrive.log
 /internal/team/config.json
 /internal/team/pending-login-session.json
 /internal/team/user_data.json
+
+# Windows Gemini local deployment (encrypted credentials, logs, portable tools)
+/.local/
+/.tools/
+/gawkbot-windows.exe
+
+mqtt_config.json
+

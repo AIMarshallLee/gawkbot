@@ -49,23 +49,23 @@ export function sidebarAppRouteKind(
  */
 export const APP_LABELS: Record<AppPanelId | FirstClassAppId, string> = {
   // First-class surfaces (live at dedicated routes, not `/apps/$id`).
-  wiki: "Wiki",
-  inbox: "Inbox",
-  tasks: "Tasks",
-  agents: "Bots",
+  wiki: "Wiki · 知识库",
+  inbox: "Inbox · 收件箱",
+  tasks: "Tasks · 任务",
+  agents: "Bots · 机器人",
   // Routed app panels under `/apps/$appId`. The `activity` id keeps its
   // historical slug so existing /apps/activity URLs still resolve; the
   // human-facing label is "Dashboard" (renamed in #1002). The `calendar`
   // entry is intentionally dropped — Routines replaces it.
-  activity: "Dashboard",
-  graph: "Graph",
-  "health-check": "Access & Health",
-  integrations: "Integrations",
-  policies: "Policies",
-  requests: "Requests",
-  routines: "Scheduled Tasks",
-  settings: "Settings",
-  skills: "Skills",
+  activity: "Dashboard · 仪表盘",
+  graph: "Graph · 知识图谱",
+  "health-check": "Access & Health · 访问与健康检查",
+  integrations: "Integrations · 集成",
+  policies: "Policies · 策略",
+  requests: "Requests · 请求",
+  routines: "Scheduled Tasks · 定时任务",
+  settings: "Settings · 设置",
+  skills: "Skills · 技能",
 };
 
 /**

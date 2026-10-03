@@ -89,7 +89,7 @@ export function StaffingStatePill() {
         style={{ background: DOT_COLOR.running }}
         aria-hidden="true"
       />
-      staffing
+      分配中 · staffing
     </span>
   );
 }
@@ -114,7 +114,7 @@ export function LifecycleStatePill({ state }: LifecycleStatePillProps) {
       style={style}
       data-state={state}
       data-activity={dotKind}
-      aria-label={`State: ${label}. ${ariaLabelForActivityDot(dotKind)}.`}
+      aria-label={`State: ${state} (${label}). ${ariaLabelForActivityDot(dotKind)}.`}
     >
       <span
         className={`dot${dotKind === "running" ? " dot--blink" : ""}`}

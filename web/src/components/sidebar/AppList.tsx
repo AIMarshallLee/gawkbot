@@ -27,6 +27,7 @@ import { AppsSection } from "./AppsSection";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSection } from "./SidebarSection";
 import { TasksNavButton } from "./TasksNavButton";
+import { bilingual } from "../../lib/bilingual";
 
 // The Wiki surface renders inside its own app shell, so the 'Wiki' sidebar
 // entry lights up for any wiki currentApp value.
@@ -58,16 +59,19 @@ const APP_ICONS: Record<string, ComponentType<{ className?: string }>> = {
 // within each group is the display order. (The `routines` tool shows as
 // "Scheduled Tasks" via APP_LABELS.)
 const NAV_SECTIONS: ReadonlyArray<{
+	key: string;
   label: string;
   items: readonly string[];
 }> = [
   {
-    label: "Work",
+    key: "Work",
+    label: bilingual("Work", "工作"),
     items: ["tasks", "routines", "activity"],
   },
-  { label: "Knowledge", items: ["wiki", "graph"] },
+  { key: "Knowledge", label: bilingual("Knowledge", "知识"), items: ["wiki", "graph"] },
   {
-    label: "Config",
+    key: "Config",
+    label: bilingual("Config", "配置"),
     items: ["agents", "policies", "skills", "integrations", "health-check"],
   },
 ];
@@ -114,14 +118,14 @@ export function AppList() {
   return (
     <div className="sidebar-scroll-wrap is-apps">
       {NAV_SECTIONS.map((section) => (
-        <Fragment key={section.label}>
+        <Fragment key={section.key}>
           {/* Apps is operator-facing, so it sits above Config, not at the bottom. */}
-          {section.label === "Config" ? <AppsSection /> : null}
+          {section.key === "Config" ? <AppsSection /> : null}
           <SidebarSection
             label={section.label}
-            open={open[section.label] ?? true}
-            onToggle={() => toggle(section.label)}
-            data-testid={`sidebar-section-${section.label.toLowerCase()}`}
+            open={open[section.key] ?? true}
+            onToggle={() => toggle(section.key)}
+            data-testid={`sidebar-section-${section.key.toLowerCase()}`}
           >
             <div className="sidebar-apps">{section.items.map(renderItem)}</div>
           </SidebarSection>

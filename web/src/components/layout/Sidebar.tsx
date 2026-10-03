@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Settings as SettingsIcon, SidebarCollapse } from "iconoir-react";
 
 import { useResizablePane } from "../../hooks/useResizablePane";
+import { bilingual } from "../../lib/bilingual";
 import { NAMED_CHANNELS_ENABLED } from "../../lib/constants";
 import { router } from "../../lib/router";
 import { useCurrentApp } from "../../routes/useCurrentRoute";
@@ -95,8 +96,8 @@ export function Sidebar() {
               type="button"
               className="sidebar-logo"
               onClick={() => router.navigate({ to: "/" })}
-              title="Home"
-              aria-label="gawkbot — go to home"
+              title={bilingual("Home", "首页")}
+              aria-label={bilingual("gawkbot — go to home", "gawkbot — 返回首页")}
             >
               gawkbot
             </button>
@@ -105,8 +106,8 @@ export function Sidebar() {
               <button
                 type="button"
                 className="sidebar-icon-btn"
-                aria-label="Collapse sidebar"
-                title="Collapse sidebar"
+                aria-label={bilingual("Collapse sidebar", "收起侧边栏")}
+                title={bilingual("Collapse sidebar", "收起侧边栏")}
                 onClick={collapseSidebar}
               >
                 <SidebarCollapse />
@@ -114,8 +115,8 @@ export function Sidebar() {
               <button
                 type="button"
                 className={`sidebar-icon-btn${currentApp === "settings" ? " active" : ""}`}
-                aria-label="Open settings"
-                title="Settings"
+                aria-label={bilingual("Open settings", "打开设置")}
+                title={bilingual("Settings", "设置")}
                 onClick={() =>
                   router.navigate({
                     to: "/apps/$appId",
@@ -135,7 +136,7 @@ export function Sidebar() {
                 at any time. Collapsible + persisted via the app store, exactly
                 as before the Slack-style sidebar unify (#919). */}
             <SidebarSection
-              label="Bots"
+              label={bilingual("Bots", "机器人")}
               variant="team"
               open={sidebarBotsOpen}
               onToggle={toggleSidebarBots}
@@ -155,7 +156,7 @@ export function Sidebar() {
                 -- the list component and its wizard are untouched below. */}
             {NAMED_CHANNELS_ENABLED ? (
               <SidebarSection
-                label="Channels"
+                label={bilingual("Channels", "频道")}
                 open={sidebarChannelsOpen}
                 onToggle={toggleSidebarChannels}
                 data-testid="sidebar-section-channels"

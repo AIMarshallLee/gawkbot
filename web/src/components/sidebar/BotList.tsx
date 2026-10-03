@@ -7,6 +7,7 @@ import { useFirstRunNudge } from "../../hooks/useFirstRunNudge";
 import { useOfficeMembers } from "../../hooks/useMembers";
 import { useOverflow } from "../../hooks/useOverflow";
 import { AVATAR_MODE } from "../../lib/avatarMode";
+import { bilingual } from "../../lib/bilingual";
 import { type HarnessKind, resolveHarness } from "../../lib/harness";
 import { router } from "../../lib/router";
 import { useCurrentRoute } from "../../routes/useCurrentRoute";
@@ -294,7 +295,7 @@ export function BotList() {
             <>
               {cos ? (
                 <div className="sidebar-bot-group sidebar-bot-group--ceo">
-                  <div className="sidebar-bot-rank-label">Orchestrator</div>
+                  <div className="sidebar-bot-rank-label">{bilingual("Orchestrator", "协调者")}</div>
                   <SidebarBotRow
                     agent={cos}
                     isDMActive={activeBotSlug === cos.slug}
@@ -308,7 +309,7 @@ export function BotList() {
               {specialists.length > 0 ? (
                 <div className="sidebar-bot-group sidebar-bot-group--specialists">
                   <div className="sidebar-bot-rank-label">
-                    {cos ? "Reports to @cos" : "Specialists"}
+                    {cos ? bilingual("Reports to @cos", "向 @cos 汇报") : bilingual("Specialists", "专家")}
                   </div>
                   <div className="sidebar-bot-rail-tree">
                     {specialists.map((agent) => (
@@ -339,12 +340,12 @@ export function BotList() {
             type="button"
             className="sidebar-item sidebar-add-btn"
             onClick={wizard.show}
-            title="Create a new bot"
+            title={bilingual("Create a new bot", "新建机器人")}
           >
             <span style={{ width: 18, textAlign: "center", flexShrink: 0 }}>
               +
             </span>
-            <span>New Bot</span>
+            <span>{bilingual("New Bot", "新建机器人")}</span>
           </button>
           {isReconnecting ? (
             <div

@@ -55,6 +55,13 @@ func (l *Launcher) respawnPanesAfterReseed() {
 }
 
 func (l *Launcher) ReconfigureSession() error {
+	// Web mode normally runs headless. Never initialize or clean up tmux in
+	// that state: the default provider may be pane-eligible even though this
+	// particular web session deliberately has no panes. An explicit pane mode
+	// keeps using the existing lifecycle below.
+	if l.webMode && !l.paneBackedBots {
+		return nil
+	}
 	if !l.targeter().UsesPaneRuntime() {
 		if err := provider.ResetClaudeSessions(); err != nil {
 			return fmt.Errorf("reset Claude sessions: %w", err)
@@ -70,6 +77,9 @@ func (l *Launcher) ReconfigureSession() error {
 
 func (l *Launcher) reconfigureVisibleBots() error {
 	l.provider = config.ResolveLLMProvider("")
+	if l.webMode && !l.paneBackedBots {
+		return nil
+	}
 	if !l.targeter().UsesPaneRuntime() {
 		if l.paneBackedBots {
 			l.panes().KillSession()

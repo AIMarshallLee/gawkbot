@@ -4,6 +4,7 @@ import { ClipboardCheck } from "iconoir-react";
 
 import { useOfficeStats } from "../../hooks/useOfficeStats";
 import { needsYouCount } from "../../lib/needsYou";
+import { bilingual } from "../../lib/bilingual";
 import { playInboxDing } from "../../lib/notificationSound";
 import { navigateToSidebarApp } from "../../lib/sidebarNav";
 import { useCurrentApp } from "../../routes/useCurrentRoute";
@@ -43,7 +44,7 @@ export function TasksNavButton() {
       onClick={() => navigateToSidebarApp("tasks")}
     >
       <ClipboardCheck className="sidebar-item-icon" />
-      <span style={{ flex: 1 }}>Tasks</span>
+      <span style={{ flex: 1 }}>{bilingual("Tasks", "任务")}</span>
       {count > 0 ? (
         <span
           className="sidebar-badge"

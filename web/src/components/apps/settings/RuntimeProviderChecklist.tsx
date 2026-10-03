@@ -68,17 +68,8 @@ export function RuntimeProviderChecklist({
   );
 
   const connectedProviders = useMemo(
-    () =>
-      selectedProviders.filter((id): id is LLMRuntimeKind => {
-        const option = RUNTIME_PROVIDER_OPTIONS.find((p) => p.id === id);
-        return option
-          ? runtimeProviderIsConnected(option, {
-              prereqs: prereqMap,
-              localStatuses: localStatusMap,
-            })
-          : false;
-      }),
-    [localStatusMap, prereqMap, selectedProviders],
+    () => selectedProviders.map((id) => id as LLMRuntimeKind),
+    [selectedProviders],
   );
 
   useEffect(() => {
@@ -121,7 +112,7 @@ export function RuntimeProviderChecklist({
         team, use the Integrations app - those gateways are not runtimes you
         assign here.
       </p>
-      <Field label="Available providers" hint="Verified runtimes">
+      <Field label="Available providers · 可用提供商" hint="Verified runtimes · 已验证的运行时">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {providerOptions.map((option) => {
             const connected = runtimeProviderIsConnected(option, {
@@ -140,15 +131,16 @@ export function RuntimeProviderChecklist({
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-sm)",
                   background: checked ? "var(--accent-bg)" : "var(--bg-card)",
-                  opacity: connected ? 1 : 0.58,
+                  opacity: connected ? 1 : 0.85,
+                  cursor: "pointer",
                 }}
               >
                 <input
                   type="checkbox"
                   checked={checked}
-                  disabled={!connected}
+                  disabled={false}
                   onChange={() => toggleProvider(option.id)}
-                  style={{ marginTop: 2 }}
+                  style={{ marginTop: 2, cursor: "pointer" }}
                 />
                 <span>
                   <span
@@ -160,11 +152,13 @@ export function RuntimeProviderChecklist({
                     style={{
                       display: "block",
                       fontSize: 11,
-                      color: "var(--text-tertiary)",
+                      color: connected ? "var(--text-tertiary)" : "var(--text-secondary)",
                       lineHeight: 1.4,
                     }}
                   >
-                    {connected ? option.desc : "Not connected or not running"}
+                    {connected
+                      ? option.desc
+                      : `${option.desc} · 未检测到后台运行 (可强制勾选)`}
                   </span>
                 </span>
               </label>

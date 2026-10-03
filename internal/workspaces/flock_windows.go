@@ -3,26 +3,28 @@
 package workspaces
 
 import (
-	"errors"
 	"os"
+
+	"golang.org/x/sys/windows"
 )
 
-// errFileLockUnavailable is returned by lockFileExclusiveNonBlocking on
-// Windows in lieu of EWOULDBLOCK semantics. The Windows fallback in this
-// package is best-effort: lock helpers no-op so cross-builds compile.
-// Multi-broker concurrency on Windows is out of scope for the v1 multi-
-// workspace feature; tracked separately.
-var errFileLockUnavailable = errors.New("workspaces: file lock not implemented on windows")
+// lockFileExclusive blocks until an exclusive lock is held on f. Caller must
+// release via unlockFile.
+func lockFileExclusive(f *os.File) error {
+	return lockFile(f, windows.LOCKFILE_EXCLUSIVE_LOCK)
+}
 
-// lockFileExclusive is a no-op on Windows. WUPHF runs as a single
-// foreground process there for v1; concurrent broker locks land with
-// the Windows port follow-up.
-func lockFileExclusive(f *os.File) error { return nil }
+// lockFileExclusiveNonBlocking attempts to acquire an exclusive lock without
+// waiting. LockFileEx reports an error when another handle already holds it.
+func lockFileExclusiveNonBlocking(f *os.File) error {
+	return lockFile(f, windows.LOCKFILE_EXCLUSIVE_LOCK|windows.LOCKFILE_FAIL_IMMEDIATELY)
+}
 
-// lockFileExclusiveNonBlocking returns errFileLockUnavailable on Windows.
-// Callers that use the non-blocking path must handle this signal; blocking
-// acquireLock uses lockFileExclusive (no-op) instead.
-func lockFileExclusiveNonBlocking(f *os.File) error { return errFileLockUnavailable }
+func lockFile(f *os.File, flags uint32) error {
+	return windows.LockFileEx(windows.Handle(f.Fd()), flags, 0, 1, 0, &windows.Overlapped{})
+}
 
-// unlockFile is a no-op on Windows — no lock was acquired by lockFileExclusive.
-func unlockFile(f *os.File) error { return nil }
+// unlockFile releases the lock acquired by lockFileExclusive[NonBlocking].
+func unlockFile(f *os.File) error {
+	return windows.UnlockFileEx(windows.Handle(f.Fd()), 0, 1, 0, &windows.Overlapped{})
+}

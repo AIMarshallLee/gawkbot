@@ -106,8 +106,8 @@ export function PacketActionSidebar({
   const runtime = packet.sessionReport?.metadata?.runtime;
   const toolCalls = packet.sessionReport?.metadata?.tool_calls;
   const ownerSummary = runtime
-    ? `${packet.ownerSlug} · ran ${runtime}${
-        toolCalls ? ` · ${toolCalls} tool calls` : ""
+    ? `${packet.ownerSlug} · ran ${runtime} · 运行了 ${runtime}${
+        toolCalls ? ` · ${toolCalls} tool calls · ${toolCalls} 次工具调用` : ""
       }`
     : packet.ownerSlug;
 
@@ -118,10 +118,10 @@ export function PacketActionSidebar({
 
   return (
     <aside className="packet-right" aria-label="Decision actions">
-      <h3>Decision</h3>
+      <h3>Decision · 决策</h3>
       <label className="packet-comment-label" htmlFor="packet-comment">
-        Add a comment
-        <span className="packet-comment-optional">optional</span>
+        Add a comment · 添加备注
+        <span className="packet-comment-optional">optional · 可选</span>
       </label>
       <textarea
         id="packet-comment"
@@ -129,7 +129,7 @@ export function PacketActionSidebar({
         placeholder={
           trimmedComment.length > 0
             ? ""
-            : "Why are you approving / requesting changes? The bot reads this."
+            : "Why are you approving / requesting changes? The bot reads this.\n说明批准或要求修改的原因，机器人将根据此反馈继续迭代。"
         }
         value={comment}
         disabled={isDecisionLocked}
@@ -142,27 +142,27 @@ export function PacketActionSidebar({
           className="packet-action packet-action--approve"
           onClick={() => submit(onApprove)}
           disabled={isDecisionLocked}
-          title={lockedTooltip}
+          title={lockedTooltip ? "Wait for review state · 请等待审查状态就绪" : undefined}
         >
-          Approve <span className="kbd">a</span>
+          Approve · 批准 <span className="kbd">a</span>
         </button>
         <button
           type="button"
           className="packet-action packet-action--secondary"
           onClick={() => submit(onRequestChanges)}
           disabled={isDecisionLocked}
-          title={lockedTooltip}
+          title={lockedTooltip ? "Wait for review state · 请等待审查状态就绪" : undefined}
         >
-          Request changes <span className="kbd">r</span>
+          Request changes · 要求修改 <span className="kbd">r</span>
         </button>
         <button
           type="button"
           className="packet-action packet-action--quiet"
           onClick={() => submit(onDefer)}
           disabled={isDecisionLocked}
-          title={lockedTooltip}
+          title={lockedTooltip ? "Wait for review state · 请等待审查状态就绪" : undefined}
         >
-          Defer
+          Defer · 推迟
           <span className="kbd" aria-hidden="true">
             ·
           </span>
@@ -172,9 +172,9 @@ export function PacketActionSidebar({
           className="packet-action packet-action--danger"
           onClick={() => submit(onBlock)}
           disabled={isDecisionLocked}
-          title={lockedTooltip}
+          title={lockedTooltip ? "Wait for review state · 请等待审查状态就绪" : undefined}
         >
-          Block <span className="kbd">b</span>
+          Block · 阻止 <span className="kbd">b</span>
         </button>
         {onReject ? (
           <button
@@ -184,12 +184,12 @@ export function PacketActionSidebar({
             disabled={isDecisionLocked || trimmedComment.length === 0}
             title={
               trimmedComment.length === 0
-                ? "Reject needs a reason — type one in the comment box first"
-                : "Reject is terminal — downstream dependents stay blocked"
+                ? "Reject needs a reason — type one in the comment box first · 拒绝需要填写原因 — 请先在输入框中输入"
+                : "Reject is terminal — downstream dependents stay blocked · 终态拒绝 — 下游依赖项将保持受阻"
             }
             data-testid="packet-reject-submit"
           >
-            Reject <span className="kbd">x</span>
+            Reject · 拒绝 <span className="kbd">x</span>
           </button>
         ) : null}
         <button
@@ -197,32 +197,32 @@ export function PacketActionSidebar({
           className="packet-action packet-action--quiet"
           onClick={onOpenInWorktree}
         >
-          Open in worktree <span className="kbd">w</span>
+          Open in worktree · 在工作区打开 <span className="kbd">w</span>
         </button>
       </div>
 
-      <h3>Context</h3>
+      <h3>Context · 上下文</h3>
       <div className="packet-aside-card">
-        <div className="label">Owner bot</div>
+        <div className="label">Owner bot · 负责机器人</div>
         <div className="value">{ownerSummary}</div>
       </div>
       <div className="packet-aside-card">
-        <div className="label">Worktree</div>
+        <div className="label">Worktree · 工作区</div>
         <div className="value">
           <code>{packet.worktreePath}</code>
         </div>
       </div>
       {watchingValue ? (
         <div className="packet-aside-card">
-          <div className="label">Watching</div>
+          <div className="label">Watching · 协同关注</div>
           <div className="value">{watchingValue}</div>
         </div>
       ) : null}
       {packet.dependencies.blockedOn.length > 0 ? (
         <div className="packet-aside-card">
-          <div className="label">Blocked on</div>
+          <div className="label">Blocked on · 阻塞于</div>
           <div className="value" style={{ color: "var(--warning-500)" }}>
-            {packet.dependencies.blockedOn.join(", ")} — waiting merge
+            {packet.dependencies.blockedOn.join(", ")} · waiting merge · 等待合并
           </div>
         </div>
       ) : null}

@@ -117,12 +117,23 @@ func (b *Broker) maybeSpawnAppBuilderTaskFromProposal(requestID string) {
 	if channel == "" {
 		channel = "general"
 	}
+	owner := appBuilderSlug
+	b.mu.Lock()
+	if b.findMemberLocked(owner) == nil {
+		if b.findMemberLocked("founding-engineer") != nil {
+			owner = "founding-engineer"
+		} else if b.findMemberLocked("cos") != nil {
+			owner = "cos"
+		}
+	}
+	b.mu.Unlock()
+
 	if _, err := b.MutateTask(TaskPostRequest{
 		Action:    "create",
 		Channel:   channel,
 		Title:     title,
 		Details:   details,
-		Owner:     appBuilderSlug,
+		Owner:     owner,
 		CreatedBy: "system",
 		TaskType:  "issue",
 	}); err != nil {

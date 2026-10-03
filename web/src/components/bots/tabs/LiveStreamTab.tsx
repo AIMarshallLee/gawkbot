@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { listBotLogTasks, type TaskLogSummary } from "../../../api/tasks";
 import { useBotStream } from "../../../hooks/useBotStream";
+import { bilingual } from "../../../lib/bilingual";
 import { useAppStore } from "../../../stores/app";
 import { StreamLineView } from "../../messages/StreamLineView";
 
@@ -36,8 +37,8 @@ function RecentRunsSection({ agentSlug }: { agentSlug: string }) {
   if (isLoading) {
     return (
       <div className="bot-stream-section">
-        <div className="bot-stream-section-title">Recent runs</div>
-        <div className="bot-stream-runs-empty">Loading…</div>
+        <div className="bot-stream-section-title">{bilingual("Recent runs", "最近运行")}</div>
+        <div className="bot-stream-runs-empty">{bilingual("Loading…", "加载中…")}</div>
       </div>
     );
   }
@@ -45,7 +46,7 @@ function RecentRunsSection({ agentSlug }: { agentSlug: string }) {
   if (isError) {
     return (
       <div className="bot-stream-section">
-        <div className="bot-stream-section-title">Recent runs</div>
+        <div className="bot-stream-section-title">{bilingual("Recent runs", "最近运行")}</div>
         <div className="bot-stream-runs-empty" role="alert">
           Couldn't load recent runs.
         </div>
@@ -55,9 +56,9 @@ function RecentRunsSection({ agentSlug }: { agentSlug: string }) {
 
   return (
     <div className="bot-stream-section">
-      <div className="bot-stream-section-title">Recent runs</div>
+      <div className="bot-stream-section-title">{bilingual("Recent runs", "最近运行")}</div>
       {runs.length === 0 ? (
-        <div className="bot-stream-runs-empty">No recent runs</div>
+        <div className="bot-stream-runs-empty">{bilingual("No recent runs", "暂无最近运行")}</div>
       ) : (
         <ul className="bot-stream-runs-list">
           {runs.map((r) => (
@@ -105,16 +106,16 @@ export function LiveStreamTab({ agentSlug }: LiveStreamTabProps) {
     <div className="bot-stream-tab" data-testid="live-stream-tab">
       {/* Live stream section */}
       <div className="bot-stream-section">
-        <div className="bot-stream-section-title">Live output</div>
+        <div className="bot-stream-section-title">{bilingual("Live output", "实时输出")}</div>
         <div className="bot-stream-status">
           <span
             className={`status-dot ${connected ? "active pulse" : "lurking"}`}
           />
-          <span>{connected ? "Connected" : "Idle"}</span>
+          <span>{connected ? bilingual("Connected", "已连接") : bilingual("Idle", "空闲")}</span>
         </div>
         <div className="bot-stream-log bot-stream-log--full" ref={scrollRef}>
           {lines.length === 0 ? (
-            <div className="bot-stream-empty">No output yet</div>
+            <div className="bot-stream-empty">{bilingual("No output yet", "暂无输出")}</div>
           ) : (
             lines.map((line) => (
               <StreamLineView

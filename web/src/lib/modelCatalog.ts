@@ -30,6 +30,9 @@ const CLOUD_MODELS: Record<
   Exclude<LLMRuntimeKind, "mlx-lm" | "ollama" | "exo">,
   string[]
 > = {
+  antigravity: [],
+  "antigravity-2": [],
+  custom: [],
   "claude-code": [
     // Current / recommended
     "claude-opus-4-8",

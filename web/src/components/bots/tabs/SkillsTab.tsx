@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "iconoir-react";
 
 import type { Skill } from "../../../api/client";
+import { bilingual } from "../../../lib/bilingual";
 import {
   disableSkillForBot,
   enableSkillForBot,
@@ -62,12 +63,12 @@ function EnabledSkillsGrid({
                 onClick={() => onRemove(sk.name)}
                 aria-label={`Remove ${sk.title ?? sk.name} from @${agentSlug}`}
               >
-                Remove
+                {bilingual("Remove", "移除")}
               </button>
             }
           />
           <span className="bot-skills-card-pill" aria-hidden="true">
-            Enabled
+            {bilingual("Enabled", "已启用")}
           </span>
         </li>
       ))}
@@ -116,7 +117,7 @@ function LibrarySkillsList({
             onClick={() => onAdd(sk.name)}
             aria-label={`Add ${sk.title ?? sk.name} to @${agentSlug}`}
           >
-            + Add
+            + {bilingual("Add", "添加")}
           </button>
         </li>
       ))}
@@ -183,7 +184,7 @@ export function SkillsTab({ agentSlug }: SkillsTabProps) {
       {/* Header: title + Enabled / Library mode switch */}
       <div className="bot-skills-header">
         <div>
-          <h2 className="bot-skills-title">Skills</h2>
+          <h2 className="bot-skills-title">{bilingual("Skills", "技能")}</h2>
           <p className="bot-skills-subtitle">
             Skills extend what @{agentSlug} can do. Enabled skills are injected
             into the agent's system prompt.
@@ -193,7 +194,7 @@ export function SkillsTab({ agentSlug }: SkillsTabProps) {
         <div
           className="bot-skills-mode-switch"
           role="tablist"
-          aria-label="Skills view mode"
+          aria-label={bilingual("Skills view mode", "技能视图模式")}
         >
           <button
             type="button"
@@ -202,7 +203,7 @@ export function SkillsTab({ agentSlug }: SkillsTabProps) {
             className={`bot-skills-mode-btn${mode === "enabled" ? " bot-skills-mode-btn--active" : ""}`}
             onClick={() => setMode("enabled")}
           >
-            Enabled
+            {bilingual("Enabled", "已启用")}
             <span className="bot-skills-mode-count">
               {enabledSkills.length}
             </span>
@@ -214,7 +215,7 @@ export function SkillsTab({ agentSlug }: SkillsTabProps) {
             className={`bot-skills-mode-btn${mode === "library" ? " bot-skills-mode-btn--active" : ""}`}
             onClick={() => setMode("library")}
           >
-            Library
+            {bilingual("Library", "技能库")}
             <span className="bot-skills-mode-count">
               {librarySkills.length}
             </span>
@@ -234,16 +235,18 @@ export function SkillsTab({ agentSlug }: SkillsTabProps) {
           className="bot-skills-filter-input"
           type="text"
           placeholder={
-            mode === "enabled" ? "Filter enabled skills…" : "Search library…"
+            mode === "enabled"
+              ? bilingual("Filter enabled skills…", "筛选已启用技能…")
+              : bilingual("Search library…", "搜索技能库…")
           }
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          aria-label="Filter skills"
+          aria-label={bilingual("Filter skills", "筛选技能")}
         />
       </div>
 
       {isLoading ? (
-        <p className="bot-skills-empty">Loading skills…</p>
+        <p className="bot-skills-empty">{bilingual("Loading skills…", "正在加载技能…")}</p>
       ) : isError ? (
         <p className="bot-skills-empty" role="alert">
           Couldn't load skills. Check your connection and try again.

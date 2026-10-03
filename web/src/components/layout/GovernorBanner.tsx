@@ -2,6 +2,7 @@ import { useCallback } from "react";
 
 import type { GovernorStatus } from "../../api/governor";
 import { useGovernor, useGovernorAction } from "../../hooks/useGovernor";
+import { bilingual } from "../../lib/bilingual";
 import { reasonDetail, reasonHeadline } from "./governorFormat";
 
 interface GovernorBannerViewProps {
@@ -58,7 +59,7 @@ export function GovernorBannerView({
           disabled={busy}
           type="button"
         >
-          {stopped ? "Resume" : "Continue"}
+          {stopped ? bilingual("Resume", "恢复") : bilingual("Continue", "继续")}
         </button>
         {showBudgetBump ? (
           <button
@@ -67,7 +68,7 @@ export function GovernorBannerView({
             disabled={busy}
             type="button"
           >
-            Continue +budget
+            {bilingual("Continue +budget", "继续并增加预算")}
           </button>
         ) : null}
         {stopped ? null : (
@@ -77,7 +78,7 @@ export function GovernorBannerView({
             disabled={busy}
             type="button"
           >
-            Stop
+            {bilingual("Stop", "停止")}
           </button>
         )}
       </div>

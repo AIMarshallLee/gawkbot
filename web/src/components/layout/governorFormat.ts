@@ -1,4 +1,5 @@
 import type { GovernorReason, GovernorStatus } from "../../api/governor";
+import { bilingual } from "../../lib/bilingual";
 
 /** "152k" / "980" — compact token count for chips and banners. */
 export function formatTokens(n: number): string {
@@ -17,15 +18,15 @@ export function formatCost(n: number): string {
 export function reasonHeadline(reason: GovernorReason): string {
   switch (reason) {
     case "budget":
-      return "Budget checkpoint";
+      return bilingual("Budget checkpoint", "预算检查点");
     case "turns":
-      return "Review checkpoint";
+      return bilingual("Review checkpoint", "审查检查点");
     case "stop":
-      return "Stopped";
+      return bilingual("Stopped", "已停止");
     case "manual":
-      return "Paused";
+      return bilingual("Paused", "已暂停");
     default:
-      return "Paused";
+      return bilingual("Paused", "已暂停");
   }
 }
 
@@ -36,13 +37,19 @@ export function reasonDetail(status: GovernorStatus): string {
   const turns = status.turnsSinceCheckpoint;
   switch (status.reason) {
     case "budget":
-      return `The team has used ${tokens} tokens (${cost}) since the last checkpoint. Review the work, then continue or stop.`;
+      return bilingual(
+        `The team has used ${tokens} tokens (${cost}) since the last checkpoint. Review the work, then continue or stop.`,
+        `团队自上次检查点已使用 ${tokens} 个令牌（${cost}）。请审查工作后继续或停止。`,
+      );
     case "turns":
-      return `The team has run ${turns} turns without a human in the loop. Review the work, then continue or stop.`;
+      return bilingual(
+        `The team has run ${turns} turns without a human in the loop. Review the work, then continue or stop.`,
+        `团队在无人介入时已运行 ${turns} 轮。请审查工作后继续或停止。`,
+      );
     case "stop":
-      return "In-flight work was cancelled. Resume when you are ready.";
+      return bilingual("In-flight work was cancelled. Resume when you are ready.", "进行中的工作已取消。准备好后可恢复。");
     default:
-      return "Dispatch is paused. Review the work, then continue or stop.";
+      return bilingual("Dispatch is paused. Review the work, then continue or stop.", "调度已暂停。请审查工作后继续或停止。");
   }
 }
 
@@ -51,5 +58,8 @@ export function meterSummary(status: GovernorStatus): string {
   const turns = status.turnsSinceCheckpoint;
   const tokens = formatTokens(status.tokensSinceCheckpoint);
   const cost = formatCost(status.costSinceCheckpoint);
-  return `${turns} ${turns === 1 ? "turn" : "turns"} · ${tokens} tok · ${cost}`;
+  return bilingual(
+    `${turns} ${turns === 1 ? "turn" : "turns"} · ${tokens} tok · ${cost}`,
+    `${turns} 轮 · ${tokens} 个令牌 · ${cost}`,
+  );
 }

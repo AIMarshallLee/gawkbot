@@ -155,16 +155,16 @@ export function TaskCreateDialog({
         onKeyDown={handleKeyDown}
         aria-describedby={undefined}
       >
-        <DialogTitle className="sr-only">Create a new task</DialogTitle>
+        <DialogTitle className="sr-only">Create a new task · 新建任务</DialogTitle>
         <DialogDescription className="sr-only">
-          File a new task. Use {MOD_KEY} plus Enter to submit.
+          File a new task. Use {MOD_KEY} plus Enter to submit. · 新建任务，按 {MOD_KEY} + Enter 提交。
         </DialogDescription>
 
         <div className="issue-create-eyebrow">
           <span className="issue-create-eyebrow-icon">
             <KeyframeSolid width={14} height={14} aria-hidden="true" />
           </span>
-          <span className="issue-create-eyebrow-label">New task</span>
+          <span className="issue-create-eyebrow-label">New task · 新建任务</span>
           {defaultAssignee ? (
             <>
               <span className="issue-create-eyebrow-sep" aria-hidden="true">
@@ -177,7 +177,7 @@ export function TaskCreateDialog({
 
         <div className="issue-create-body">
           <label htmlFor={titleId} className="sr-only">
-            Task title
+            Task title · 任务标题
           </label>
           <input
             ref={titleRef}
@@ -185,7 +185,7 @@ export function TaskCreateDialog({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Task title"
+            placeholder="Task title · 任务标题"
             className="issue-create-title-input"
             data-testid="issue-create-title"
             autoComplete="off"
@@ -193,13 +193,13 @@ export function TaskCreateDialog({
           />
 
           <label htmlFor={detailsId} className="sr-only">
-            Task details
+            Task details · 任务详情
           </label>
           <textarea
             id={detailsId}
             value={details}
             onChange={(e) => setDetails(e.target.value)}
-            placeholder="Add description…"
+            placeholder="Add description… · 添加描述…"
             rows={4}
             className="issue-create-description"
             data-testid="issue-create-details"
@@ -220,9 +220,9 @@ export function TaskCreateDialog({
               onChange={(e) => setAssignee(e.target.value)}
               className="issue-create-chip-select"
               data-testid="issue-create-assignee"
-              aria-label="Assignee"
+              aria-label="Assignee · 执行人"
             >
-              <option value={AUTO_ASSIGN}>Auto-assign</option>
+              <option value={AUTO_ASSIGN}>Auto-assign · 自动分配</option>
               {members.map((m) => (
                 <option key={m.slug} value={m.slug}>
                   {m.name}
@@ -251,7 +251,7 @@ export function TaskCreateDialog({
               className="issue-create-more-checkbox"
               data-testid="issue-create-more"
             />
-            <span>Create more</span>
+            <span>Create more · 继续创建</span>
           </label>
           <div className="issue-create-actions">
             <button
@@ -260,7 +260,7 @@ export function TaskCreateDialog({
               onClick={() => onOpenChange(false)}
               disabled={createTask.isPending}
             >
-              Cancel
+              Cancel · 取消
             </button>
             <button
               type="button"
@@ -269,7 +269,7 @@ export function TaskCreateDialog({
               disabled={!canSubmit}
               data-testid="issue-create-submit"
             >
-              <span>{createTask.isPending ? "Creating…" : "Create task"}</span>
+              <span>{createTask.isPending ? "Creating… · 创建中…" : "Create task · 创建任务"}</span>
               <Kbd size="sm" variant="inverse">{`${MOD_KEY}⏎`}</Kbd>
             </button>
           </div>

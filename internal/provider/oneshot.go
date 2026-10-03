@@ -2,14 +2,16 @@ package provider
 
 import (
 	"context"
+	"errors"
+	"strings"
 
+	"github.com/nex-crm/wuphf/internal/bot"
 	"github.com/nex-crm/wuphf/internal/config"
 )
 
 // RunConfiguredOneShot runs a single-shot generation using the active LLM
-// provider's OneShot implementation. Providers without a one-shot path
-// (Capabilities.SupportsOneShot == false) and unregistered kinds fall back
-// to Claude.
+// provider's OneShot implementation. OpenAI-compatible providers use their
+// HTTP stream for a text-only completion, without requiring a local CLI.
 func RunConfiguredOneShot(systemPrompt, prompt, cwd string) (string, error) {
 	return RunConfiguredOneShotCtx(context.Background(), systemPrompt, prompt, cwd)
 }
@@ -32,6 +34,29 @@ func RunConfiguredOneShotCtx(ctx context.Context, systemPrompt, prompt, cwd stri
 		if e.OneShot != nil {
 			return runLegacyOneShotCtx(ctx, e.OneShot, systemPrompt, prompt, cwd)
 		}
+	}
+	if baseURL, _ := OpenAICompatDefaults(kind); baseURL != "" {
+		messages := []bot.Message{{Role: "system", Content: systemPrompt}, {Role: "user", Content: prompt}}
+		var result strings.Builder
+		var streamErr error
+		for chunk := range NewOpenAICompatStreamFnWithCtx(ctx, kind)(messages, nil) {
+			switch chunk.Type {
+			case "text":
+				result.WriteString(chunk.Content)
+			case "error":
+				streamErr = errors.New(chunk.Content)
+			}
+		}
+		if err := ctx.Err(); err != nil {
+			return "", err
+		}
+		if streamErr != nil {
+			return "", streamErr
+		}
+		if strings.TrimSpace(result.String()) == "" {
+			return "", errors.New("OpenAI-compatible provider returned no text")
+		}
+		return strings.TrimSpace(result.String()), nil
 	}
 	return RunClaudeOneShotCtx(ctx, systemPrompt, prompt, cwd)
 }

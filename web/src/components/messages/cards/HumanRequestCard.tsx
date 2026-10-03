@@ -49,6 +49,7 @@ import {
   requestOptionTextHint,
 } from "../../../lib/requestOptions";
 import { showNotice } from "../../ui/Toast";
+import { TranslateButton } from "../../ui/TranslateButton";
 
 export interface HumanRequestRaisedPayload {
   request_id?: string;
@@ -244,14 +245,18 @@ export function HumanRequestCard({
     void submit(option);
   }
 
+  const [translatedQuestion, setTranslatedQuestion] = useState<string | null>(null);
+
   const heading =
-    payload.label === "interview" ? "asks you" : "needs a decision";
+    payload.label === "interview"
+      ? "向您提问 · asks you"
+      : "等待您决策审核 · needs a decision";
 
   function renderBody() {
     if (!(isPending && live)) {
       return (
         <div className="request-card-help" data-testid="human-request-settled">
-          {live ? "Answered." : "No longer waiting on you."}
+          {live ? "已答复完成 · Answered." : "此项已无需您处理 · No longer waiting on you."}
         </div>
       );
     }
@@ -276,13 +281,12 @@ export function HumanRequestCard({
         />
       );
     }
-    // Pending but optionless — a free-text ask. The thread reply IS the answer
-    // path (the broker anchored this message as req.ReplyTo), so say that
-    // rather than rendering an empty action row.
     return (
-      <div className="request-card-help">Reply in this thread to answer.</div>
+      <div className="request-card-help">在当前会话中回复即可作答 · Reply in this thread to answer.</div>
     );
   }
+
+  const displayQuestion = translatedQuestion ?? question;
 
   return (
     <div
@@ -299,7 +303,7 @@ export function HumanRequestCard({
           {asker ? (
             <span className="request-card-asker">@{asker}</span>
           ) : (
-            "A bot"
+            "机器人 · A bot"
           )}{" "}
           {heading}
           {blocking && isPending ? (
@@ -311,7 +315,15 @@ export function HumanRequestCard({
       {title && title !== question && title !== "Request" ? (
         <div className="request-card-title">{title}</div>
       ) : null}
-      <div className="request-card-question">{question}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, margin: "6px 0" }}>
+        <div className="request-card-question" style={{ flex: 1 }}>{displayQuestion}</div>
+        {question ? (
+          <TranslateButton
+            originalText={question}
+            onToggle={(_isZh, text) => setTranslatedQuestion(text)}
+          />
+        ) : null}
+      </div>
 
       {renderBody()}
     </div>

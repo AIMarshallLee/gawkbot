@@ -31,7 +31,7 @@ describe("<GovernorBannerView>", () => {
         onStop={vi.fn()}
       />,
     );
-    expect(screen.getByText("Budget checkpoint")).toBeTruthy();
+    expect(screen.getByText("Budget checkpoint · 预算检查点")).toBeTruthy();
     expect(screen.getByText(/152k tokens/)).toBeTruthy();
     expect(screen.getByText(/\$2\.10/)).toBeTruthy();
   });
@@ -49,9 +49,9 @@ describe("<GovernorBannerView>", () => {
         onStop={onStop}
       />,
     );
-    fireEvent.click(screen.getByText("Continue"));
-    fireEvent.click(screen.getByText("Continue +budget"));
-    fireEvent.click(screen.getByText("Stop"));
+    fireEvent.click(screen.getByText("Continue · 继续"));
+    fireEvent.click(screen.getByText("Continue +budget · 继续并增加预算"));
+    fireEvent.click(screen.getByText("Stop · 停止"));
     expect(onResume).toHaveBeenCalledOnce();
     expect(onResumeMore).toHaveBeenCalledOnce();
     expect(onStop).toHaveBeenCalledOnce();
@@ -67,10 +67,10 @@ describe("<GovernorBannerView>", () => {
         onStop={vi.fn()}
       />,
     );
-    expect(screen.getByText("Review checkpoint")).toBeTruthy();
-    expect(screen.queryByText("Continue +budget")).toBeNull();
-    expect(screen.getByText("Continue")).toBeTruthy();
-    expect(screen.getByText("Stop")).toBeTruthy();
+    expect(screen.getByText("Review checkpoint · 审查检查点")).toBeTruthy();
+    expect(screen.queryByText("Continue +budget · 继续并增加预算")).toBeNull();
+    expect(screen.getByText("Continue · 继续")).toBeTruthy();
+    expect(screen.getByText("Stop · 停止")).toBeTruthy();
   });
 
   it("renders a manual pause with Continue and Stop but no budget bump", () => {
@@ -83,8 +83,8 @@ describe("<GovernorBannerView>", () => {
         onStop={vi.fn()}
       />,
     );
-    expect(screen.getByText("Paused")).toBeTruthy();
-    expect(screen.queryByText("Continue +budget")).toBeNull();
+    expect(screen.getByText("Paused · 已暂停")).toBeTruthy();
+    expect(screen.queryByText("Continue +budget · 继续并增加预算")).toBeNull();
   });
 
   it("collapses to a single Resume action once stopped", () => {
@@ -97,9 +97,9 @@ describe("<GovernorBannerView>", () => {
         onStop={vi.fn()}
       />,
     );
-    expect(screen.getByText("Resume")).toBeTruthy();
-    expect(screen.queryByText("Continue +budget")).toBeNull();
-    expect(screen.queryByText("Stop")).toBeNull();
+    expect(screen.getByText("Resume · 恢复")).toBeTruthy();
+    expect(screen.queryByText("Continue +budget · 继续并增加预算")).toBeNull();
+    expect(screen.queryByText("Stop · 停止")).toBeNull();
   });
 
   it("disables actions while a command is in flight", () => {
@@ -112,7 +112,7 @@ describe("<GovernorBannerView>", () => {
         onStop={vi.fn()}
       />,
     );
-    expect(screen.getByText("Continue").closest("button")?.disabled).toBe(true);
+    expect(screen.getByText("Continue · 继续").closest("button")?.disabled).toBe(true);
   });
 });
 
@@ -129,9 +129,9 @@ describe("<GovernorControlView>", () => {
         onStop={onStop}
       />,
     );
-    expect(screen.getByText(/12 turns · 152k tok · \$2\.10/)).toBeTruthy();
-    fireEvent.click(screen.getByText("Pause"));
-    fireEvent.click(screen.getByText("Stop"));
+    expect(screen.getByText(/12 turns · 152k tok · \$2\.10 · 12 轮 · 152k 个令牌 · \$2\.10/)).toBeTruthy();
+    fireEvent.click(screen.getByText("Pause · 暂停"));
+    fireEvent.click(screen.getByText("Stop · 停止"));
     expect(onPause).toHaveBeenCalledOnce();
     expect(onStop).toHaveBeenCalledOnce();
   });
@@ -147,7 +147,7 @@ describe("<GovernorControlView>", () => {
       />,
     );
     expect(screen.queryByText(/turns ·/)).toBeNull();
-    expect(screen.getByText("Pause")).toBeTruthy();
-    expect(screen.getByText("Stop")).toBeTruthy();
+    expect(screen.getByText("Pause · 暂停")).toBeTruthy();
+    expect(screen.getByText("Stop · 停止")).toBeTruthy();
   });
 });

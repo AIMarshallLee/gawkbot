@@ -11,6 +11,7 @@ import {
   resolveObjectRoute,
 } from "../lib/objectRoutes";
 import type { CurrentRoute } from "../routes/useCurrentRoute";
+import { bilingual } from "../lib/bilingual";
 
 export interface BreadcrumbItem {
   /** User-visible label. */
@@ -37,17 +38,17 @@ export function deriveBreadcrumbs(
 ): BreadcrumbItem[] {
   switch (route.kind) {
     case "task-board": {
-      return [{ label: "Tasks", href: "#/tasks" }];
+      return [{ label: bilingual("Tasks", "任务"), href: "#/tasks" }];
     }
     case "task-detail": {
       const res = resolveObjectRoute({ kind: "task", id: route.taskId });
       return [
-        { label: "Tasks", href: "#/tasks" },
+        { label: bilingual("Tasks", "任务"), href: "#/tasks" },
         breadcrumbItem(res, `Task ${route.taskId}`),
       ];
     }
     case "wiki": {
-      return [{ label: "Wiki", href: "#/wiki" }];
+      return [{ label: bilingual("Wiki", "知识库"), href: "#/wiki" }];
     }
     case "wiki-article": {
       const res = resolveObjectRoute({
@@ -55,12 +56,12 @@ export function deriveBreadcrumbs(
         path: route.articlePath,
       });
       return [
-        { label: "Wiki", href: "#/wiki" },
+        { label: bilingual("Wiki", "知识库"), href: "#/wiki" },
         breadcrumbItem(res, route.articlePath),
       ];
     }
     case "wiki-lookup": {
-      return [{ label: "Wiki", href: "#/wiki" }];
+      return [{ label: bilingual("Wiki", "知识库"), href: "#/wiki" }];
     }
     case "article": {
       return [{ label: "Article", href: `#/articles/${route.articleId}` }];
@@ -76,7 +77,7 @@ export function deriveBreadcrumbs(
           {
             label:
               route.appId === "settings"
-                ? "Settings"
+                ? "Settings · 设置"
                 : res.fallback
                   ? appLabel(route.appId)
                   : res.label,
@@ -110,21 +111,21 @@ export function deriveBreadcrumbs(
     // Tasks surface breadcrumbs
     case "task-new":
       return [
-        { label: "Tasks", href: "#/tasks" },
-        { label: "New task", href: "#/tasks/new" },
+        { label: bilingual("Tasks", "任务"), href: "#/tasks" },
+        { label: bilingual("New task", "新建任务"), href: "#/tasks/new" },
       ];
     case "agents":
-      return [{ label: "Bots", href: "#/agents" }];
+      return [{ label: bilingual("Bots", "机器人"), href: "#/agents" }];
     case "bot-detail": {
       const res = resolveObjectRoute({ kind: "agent", slug: route.agentSlug });
       return [
-        { label: "Bots", href: "#/agents" },
+        { label: bilingual("Bots", "机器人"), href: "#/agents" },
         breadcrumbItem(res, `@${route.agentSlug}`),
       ];
     }
     case "skill-detail":
       return [
-        { label: "Skills", href: "#/apps/skills" },
+        { label: bilingual("Skills", "技能"), href: "#/apps/skills" },
         {
           label: route.skillName,
           href: `#/skills/${encodeURIComponent(route.skillName)}`,
@@ -132,7 +133,7 @@ export function deriveBreadcrumbs(
       ];
     case "routine-detail":
       return [
-        { label: "Scheduled Tasks", href: "#/apps/routines" },
+        { label: bilingual("Scheduled Tasks", "定时任务"), href: "#/apps/routines" },
         {
           label: route.routineSlug,
           href: `#/routines/${encodeURIComponent(route.routineSlug)}`,
@@ -140,8 +141,8 @@ export function deriveBreadcrumbs(
       ];
     case "routine-new":
       return [
-        { label: "Scheduled Tasks", href: "#/apps/routines" },
-        { label: "New scheduled task", href: "#/routines/new" },
+        { label: bilingual("Scheduled Tasks", "定时任务"), href: "#/apps/routines" },
+        { label: bilingual("New scheduled task", "新建定时任务"), href: "#/routines/new" },
       ];
     case "home":
       return [];
@@ -165,14 +166,15 @@ function breadcrumbItem(
 /** Map an app id to a friendly label without importing SIDEBAR_APPS. */
 function appLabel(appId: string): string {
   const LABELS: Record<string, string> = {
-    tasks: "Tasks",
-    requests: "Requests",
-    graph: "Graph",
-    policies: "Policies",
-    routines: "Routines",
-    skills: "Skills",
-    activity: "Activity",
-    "health-check": "Access & Health",
+    tasks: "Tasks · 任务",
+    requests: "Requests · 请求",
+    graph: "Graph · 知识图谱",
+    policies: "Policies · 策略",
+    routines: "Routines · 定时任务",
+    skills: "Skills · 技能",
+    activity: "Dashboard · 仪表盘",
+    integrations: "Integrations · 集成",
+    "health-check": "Access & Health · 访问与健康检查",
   };
   return (
     LABELS[appId] ??

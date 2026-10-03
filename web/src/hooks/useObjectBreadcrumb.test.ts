@@ -28,7 +28,7 @@ describe("deriveBreadcrumbs", () => {
     };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(2);
-    expect(crumbs[0].label).toBe("Bots");
+    expect(crumbs[0].label).toBe("Bots · 机器人");
     expect(crumbs[0].href).toBe("#/agents");
     expect(crumbs[1].label).toBe("Bot: gaia");
     expect(crumbs[1].href).toBe("#/agents/gaia");
@@ -38,7 +38,7 @@ describe("deriveBreadcrumbs", () => {
     const route: CurrentRoute = { kind: "task-board" };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].label).toBe("Tasks");
+    expect(crumbs[0].label).toBe("Tasks · 任务");
     expect(crumbs[0].href).toBe("#/tasks");
   });
 
@@ -46,7 +46,7 @@ describe("deriveBreadcrumbs", () => {
     const route: CurrentRoute = { kind: "task-detail", taskId: "abc-123" };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(2);
-    expect(crumbs[0].label).toBe("Tasks");
+    expect(crumbs[0].label).toBe("Tasks · 任务");
     expect(crumbs[1].label).toBe("Task: abc-123");
     expect(crumbs[1].href).toBe("#/tasks/abc-123");
   });
@@ -55,7 +55,7 @@ describe("deriveBreadcrumbs", () => {
     const route: CurrentRoute = { kind: "wiki" };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].label).toBe("Wiki");
+    expect(crumbs[0].label).toBe("Wiki · 知识库");
   });
 
   it("returns [Wiki, article path] for wiki-article route", () => {
@@ -65,7 +65,7 @@ describe("deriveBreadcrumbs", () => {
     };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(2);
-    expect(crumbs[0].label).toBe("Wiki");
+    expect(crumbs[0].label).toBe("Wiki · 知识库");
     expect(crumbs[1].label).toBe("Wiki: people/nazz");
     expect(crumbs[1].href).toBe("#/wiki/people/nazz");
   });
@@ -74,20 +74,20 @@ describe("deriveBreadcrumbs", () => {
     const route: CurrentRoute = { kind: "wiki-lookup", query: "onboarding" };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].label).toBe("Wiki");
+    expect(crumbs[0].label).toBe("Wiki · 知识库");
   });
 
   it("returns [Settings] for settings app route", () => {
     const route: CurrentRoute = { kind: "app", appId: "settings" };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].label).toBe("Settings");
+    expect(crumbs[0].label).toBe("Settings · 设置");
   });
 
   it("returns [Graph] for graph app route", () => {
     const route: CurrentRoute = { kind: "app", appId: "graph" };
     const crumbs = deriveBreadcrumbs(route);
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].label).toBe("Graph");
+    expect(crumbs[0].label).toBe("Graph · 知识图谱");
   });
 });

@@ -140,9 +140,9 @@ describe("HealthCheckApp access and sharing", () => {
     render(wrap(<HealthCheckApp />));
 
     expect(await screen.findByText("Access & Health")).toBeInTheDocument();
-    expect(screen.getByText("Signed in as Maya")).toBeInTheDocument();
-    expect(screen.getByText("Live event stream")).toBeInTheDocument();
-    expect(await screen.findByText("Provider CLIs")).toBeInTheDocument();
+    expect(screen.getByText("Signed in as Maya · 当前登录身份")).toBeInTheDocument();
+    expect(screen.getByText("Live event stream · 实时事件流")).toBeInTheDocument();
+    expect(await screen.findByText("Provider CLIs · 提供商 CLI")).toBeInTheDocument();
     expect(screen.getByText("Claude Code")).toBeInTheDocument();
     expect(screen.getByText("2.1.139 (Claude Code)")).toBeInTheDocument();
     expect(screen.getByText("Codex")).toBeInTheDocument();
@@ -158,7 +158,7 @@ describe("HealthCheckApp access and sharing", () => {
     render(wrap(<HealthCheckApp />));
 
     await user.click(
-      await screen.findByRole("button", { name: "Create invite" }),
+      await screen.findByRole("button", { name: "Create invite · 创建邀请" }),
     );
 
     await waitFor(() => expect(startShareMock).toHaveBeenCalledTimes(1));
@@ -169,7 +169,7 @@ describe("HealthCheckApp access and sharing", () => {
       screen.getByText("Sharing on tailscale0 / 100.64.0.2"),
     ).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Stop sharing" }));
+    await user.click(screen.getByRole("button", { name: "Stop sharing · 停止共享" }));
 
     await waitFor(() => expect(stopShareMock).toHaveBeenCalledTimes(1));
   });
@@ -186,7 +186,7 @@ describe("HealthCheckApp access and sharing", () => {
     );
 
     await user.click(
-      await screen.findByRole("button", { name: "Start public tunnel" }),
+      await screen.findByRole("button", { name: "Start public tunnel · 启动公网隧道" }),
     );
 
     expect(
@@ -225,7 +225,7 @@ describe("HealthCheckApp access and sharing", () => {
       ),
     ).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Stop tunnel" }));
+    await user.click(screen.getByRole("button", { name: "Stop tunnel · 停止隧道" }));
 
     await waitFor(() => expect(stopTunnelMock).toHaveBeenCalledTimes(1));
   });
@@ -272,11 +272,11 @@ describe("HealthCheckApp access and sharing", () => {
 
     render(wrap(<HealthCheckApp />));
 
-    expect(await screen.findByText("Signed in as Tara")).toBeInTheDocument();
+    expect(await screen.findByText("Signed in as Tara · 当前登录身份")).toBeInTheDocument();
     expect(
-      screen.getByText("Team-member invites are host-only."),
+      screen.getByText("Team-member invites are host-only. · 仅主机可邀请团队成员。"),
     ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Create invite" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Create invite · 创建邀请" })).toBeNull();
     expect(getShareStatusMock).not.toHaveBeenCalled();
     expect(getHumanSessionsMock).not.toHaveBeenCalled();
   });
@@ -284,14 +284,14 @@ describe("HealthCheckApp access and sharing", () => {
   it("describes network web access without forcing SSH when already remote", () => {
     expect(selfAccessDetails("localhost", "http://localhost:7890")).toEqual({
       detail:
-        "For a server you reach through SSH, keep the tunnel open while you work.",
+        "For a server you reach through SSH, keep the tunnel open while you work. · 通过 SSH 访问服务器时，请在工作期间保持隧道连接。",
       code: "ssh -L 7890:localhost:7890 user@server",
-      footer: "Then open http://localhost:7890",
+      footer: "Then open http://localhost:7890 · 然后打开此地址",
     });
     expect(selfAccessDetails("100.64.0.2", "http://100.64.0.2:7890")).toEqual({
-      detail: "This browser is already connected through the network web UI.",
+      detail: "This browser is already connected through the network web UI. · 此浏览器已通过网络 Web UI 连接。",
       code: "http://100.64.0.2:7890",
-      footer: "Use team-member invites for scoped shared sessions.",
+      footer: "Use team-member invites for scoped shared sessions. · 请使用团队成员邀请来创建受限共享会话。",
     });
   });
 });

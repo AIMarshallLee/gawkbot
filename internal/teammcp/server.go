@@ -140,9 +140,11 @@ func registerSharedMemoryTools(server *mcp.Server) {
 			"Promote one of your private notes into shared durable memory after it becomes canonical.",
 		), handleTeamMemoryPromote)
 	}
+	registerMemoryExportTools(server)
 }
 
 func configureServerTools(server *mcp.Server, slug string, channel string, oneOnOne bool) {
+	activeTaskID := strings.TrimSpace(os.Getenv("WUPHF_ACTIVE_TASK_ID"))
 	if oneOnOne {
 		mcp.AddTool(server, officeWriteTool(
 			"reply",
@@ -185,6 +187,7 @@ func configureServerTools(server *mcp.Server, slug string, channel string, oneOn
 		if hasActionProvider() {
 			registerActionTools(server)
 		}
+		registerActiveTaskTool(server, slug, channel, activeTaskID)
 		return
 	}
 
@@ -234,6 +237,7 @@ func configureServerTools(server *mcp.Server, slug string, channel string, oneOn
 		if hasActionProvider() {
 			registerActionTools(server)
 		}
+		registerActiveTaskTool(server, slug, channel, activeTaskID)
 		return
 	}
 

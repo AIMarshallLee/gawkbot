@@ -29,7 +29,7 @@ function useConfigSnapshot(): ConfigSnapshot | undefined {
 export function useDefaultHarness(): HarnessKind {
   const cfg = useConfigSnapshot();
   const raw = cfg?.llm_provider;
-  if (raw === "claude-code" || raw === "codex" || raw === "opencode")
+  if (raw === "claude-code" || raw === "codex" || raw === "opencode" || raw === "antigravity")
     return raw;
   return DEFAULT_HARNESS;
 }

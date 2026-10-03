@@ -59,7 +59,7 @@ export function PrivacySection({ cfg, save }: SectionProps) {
 
   return (
     <div>
-      <h2 style={styles.sectionTitle}>Privacy &amp; Analytics</h2>
+      <h2 style={styles.sectionTitle}>Privacy &amp; Analytics · 隐私与分析</h2>
       <p style={styles.sectionDesc}>
         Two independent, optional controls, both on by default. Product
         analytics never collects your content, and session recordings mask
@@ -68,8 +68,8 @@ export function PrivacySection({ cfg, save }: SectionProps) {
       </p>
 
       <Field
-        label="Product analytics"
-        hint="Anonymous usage events — counts and shapes of what you do, never the content. Used to understand which flows work and which need help."
+        label="Product analytics · 产品分析"
+        hint="Anonymous usage events — counts and shapes of what you do, never the content. Used to understand which flows work and which need help. · 匿名使用事件只记录次数和形式，不记录内容，用于改进流程。"
       >
         <label style={consentToggleRow}>
           <input
@@ -79,13 +79,13 @@ export function PrivacySection({ cfg, save }: SectionProps) {
             onChange={(e) => setTelemetry(e.target.checked)}
             data-testid="settings-telemetry-toggle"
           />
-          <span>Share anonymous product analytics</span>
+          <span>Share anonymous product analytics · 分享匿名产品分析数据</span>
         </label>
       </Field>
 
       <Field
-        label="Session recording"
-        hint="Replays that mask everything you type — passwords, keys, and form fields — while capturing layout, clicks, and navigation to fix rough edges."
+        label="Session recording · 会话录制"
+        hint="Replays that mask everything you type — passwords, keys, and form fields — while capturing layout, clicks, and navigation to fix rough edges. · 回放会遮盖所有输入内容，仅记录布局、点击和导航。"
       >
         <label style={consentToggleRow}>
           <input
@@ -95,7 +95,7 @@ export function PrivacySection({ cfg, save }: SectionProps) {
             onChange={(e) => setRecording(e.target.checked)}
             data-testid="settings-recording-toggle"
           />
-          <span>Allow session recordings (typed text masked)</span>
+          <span>Allow session recordings (typed text masked) · 允许会话录制（输入内容已遮盖）</span>
         </label>
       </Field>
 

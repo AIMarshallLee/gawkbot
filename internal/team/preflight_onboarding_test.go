@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/nex-crm/wuphf/internal/onboarding"
+	"github.com/nex-crm/wuphf/internal/provider"
 )
 
 // TestPreflightWebSkipsProviderCheckWhenNotOnboarded verifies that the web
@@ -51,5 +52,46 @@ func TestPreflightWebRequiresProviderWhenOnboarded(t *testing.T) {
 	err = l.PreflightWeb()
 	if err == nil {
 		t.Fatalf("PreflightWeb after onboarding with no claude: got nil, want error")
+	}
+}
+
+func TestPreflightWebSkipsCLICheckForOnboardedOpenAICompatProvider(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("WUPHF_RUNTIME_HOME", home)
+
+	s, err := onboarding.Load()
+	if err != nil {
+		t.Fatalf("load onboarding state: %v", err)
+	}
+	s.CompletedAt = "2026-09-10T00:00:00Z"
+	if err := onboarding.Save(s); err != nil {
+		t.Fatalf("save onboarding state: %v", err)
+	}
+
+	l := &Launcher{provider: provider.KindOllama}
+	if err := l.PreflightWeb(); err != nil {
+		t.Fatalf("PreflightWeb for registered OpenAI-compatible provider: %v", err)
+	}
+}
+
+func TestPreflightWebRequiresAntigravityCLIWhenOnboarded(t *testing.T) {
+	if _, err := exec.LookPath("agy"); err == nil {
+		t.Skip("agy is on PATH; cannot test the missing-binary branch")
+	}
+
+	home := t.TempDir()
+	t.Setenv("WUPHF_RUNTIME_HOME", home)
+	s, err := onboarding.Load()
+	if err != nil {
+		t.Fatalf("load onboarding state: %v", err)
+	}
+	s.CompletedAt = "2026-09-10T00:00:00Z"
+	if err := onboarding.Save(s); err != nil {
+		t.Fatalf("save onboarding state: %v", err)
+	}
+
+	err = (&Launcher{provider: provider.KindAntigravity}).PreflightWeb()
+	if err == nil {
+		t.Fatal("PreflightWeb for missing agy: got nil, want error")
 	}
 }

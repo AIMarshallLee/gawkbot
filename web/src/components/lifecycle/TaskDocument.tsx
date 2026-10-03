@@ -29,6 +29,7 @@ import { APP_BUILDER_SLUG } from "../../lib/constants";
 import { formatTaskTitleForDisplay } from "../../lib/taskTitle";
 import type { LifecycleState } from "../../lib/types/lifecycle";
 import { AppBuildPreview } from "../apps/AppBuildPreview";
+import { Bilingual } from "../ui/Bilingual";
 import { ResizableSplit } from "../ui/ResizableSplit";
 import {
   isAwaitingStaffing,
@@ -389,10 +390,12 @@ function TaskDocumentError({
       data-testid="issue-document-error"
     >
       <div className="issue-doc-error-card" role="alert">
-        <strong>Could not load task</strong>
+        <strong>
+          <Bilingual en="Could not load task" zh="无法加载任务" layout="inline" />
+        </strong>
         <p>{message}</p>
         <button type="button" className="issue-doc-retry-btn" onClick={onRetry}>
-          Retry
+          Retry · 重试
         </button>
       </div>
     </div>
@@ -417,12 +420,22 @@ function TaskHasNoConversation({ ownerSlug }: { ownerSlug?: string }) {
       data-testid="issue-doc-no-conversation"
     >
       <strong className="issue-doc-no-conversation-title">
-        No conversation yet
+        <Bilingual en="No conversation yet" zh="暂无对话" layout="inline" />
       </strong>
       <p className="issue-doc-no-conversation-body">
-        {owner
-          ? `This task has no conversation home. Its owner @${owner} is set, so re-assigning the task will give it one.`
-          : "A task's conversation lives in its owner's DM, and this task has no owner yet. Assign one and the conversation starts there."}
+        {owner ? (
+          <Bilingual
+            en={`This task has no conversation home. Its owner @${owner} is set, so re-assigning the task will give it one.`}
+            zh={`此任务尚无对话归属频道。已指定负责人 @${owner}，重新分配任务即可创建对话。`}
+            layout="stacked"
+          />
+        ) : (
+          <Bilingual
+            en="A task's conversation lives in its owner's DM, and this task has no owner yet. Assign one and the conversation starts there."
+            zh="任务对话归属于负责人的私聊中，当前任务尚未指定负责人。分配负责人后对话将在此展开。"
+            layout="stacked"
+          />
+        )}
       </p>
     </div>
   );
@@ -492,7 +505,7 @@ export function StartParkedTaskButton({
         aria-label="Start this parked task"
         data-testid="start-parked"
       >
-        {isPending ? "Starting…" : label}
+        {isPending ? "Starting… · 正在启动…" : label}
       </button>
     </div>
   );
@@ -547,7 +560,7 @@ export function CloseTaskButton({ taskId, onClosed }: CloseTaskButtonProps) {
         aria-label="Close this task (terminal)"
         data-testid="close-issue"
       >
-        Close task
+        Close task · 关闭任务
       </button>
     );
   }
@@ -560,7 +573,7 @@ export function CloseTaskButton({ taskId, onClosed }: CloseTaskButtonProps) {
       aria-label="Confirm close task"
     >
       <label className="issue-close-confirm-label" htmlFor="close-reason">
-        Reason for closing (required)
+        Reason for closing (required) · 关闭原因（必填）
       </label>
       <textarea
         id="close-reason"
@@ -570,7 +583,7 @@ export function CloseTaskButton({ taskId, onClosed }: CloseTaskButtonProps) {
           setReason(e.target.value);
           if (closeError) setCloseError(null);
         }}
-        placeholder="e.g. Scope changed, no longer needed, duplicate of …"
+        placeholder="e.g. Scope changed, no longer needed, duplicate of … · 例如：范围变更、已不需要、重复任务等"
         rows={2}
         disabled={closeMutation.isPending}
         data-testid="close-issue-reason"
@@ -595,7 +608,7 @@ export function CloseTaskButton({ taskId, onClosed }: CloseTaskButtonProps) {
           }}
           disabled={closeMutation.isPending}
         >
-          Cancel
+          Cancel · 取消
         </button>
         <button
           type="button"
@@ -604,7 +617,7 @@ export function CloseTaskButton({ taskId, onClosed }: CloseTaskButtonProps) {
           onClick={() => closeMutation.mutate(trimmed)}
           data-testid="close-issue-confirm"
         >
-          {closeMutation.isPending ? "Closing…" : "Close task"}
+          {closeMutation.isPending ? "Closing… · 正在关闭…" : "Close task · 关闭任务"}
         </button>
       </div>
     </div>
@@ -702,7 +715,7 @@ export function TaskDocument({ taskId, initialDocument }: TaskDocumentProps) {
               className="issue-doc-staffing-note"
               data-testid="issue-staffing-note"
             >
-              Staffing — Chief of Staff is picking the owner
+              Staffing — Chief of Staff is picking the owner · 正在分配 — 幕僚长正在指定负责人
             </span>
           ) : null}
           {/* Owner and lifecycle actions stay LIVE for a task with no
@@ -761,7 +774,7 @@ export function TaskDocument({ taskId, initialDocument }: TaskDocumentProps) {
             ariaLabel="Resize chat and app preview"
             left={
               <main className="issue-doc-chat" aria-label="Chat">
-                <div className="issue-doc-chat-header">Chat</div>
+                <div className="issue-doc-chat-header">Chat · 聊天</div>
                 {doc.channel ? (
                   <TaskChannelChat channel={doc.channel} />
                 ) : (
@@ -784,7 +797,7 @@ export function TaskDocument({ taskId, initialDocument }: TaskDocumentProps) {
       ) : (
         <div className="issue-doc-body issue-doc-body--split">
           <main className="issue-doc-chat" aria-label="Chat">
-            <div className="issue-doc-chat-header">Chat</div>
+            <div className="issue-doc-chat-header">Chat · 聊天</div>
             {doc.channel ? (
               <TaskChannelChat channel={doc.channel} />
             ) : (

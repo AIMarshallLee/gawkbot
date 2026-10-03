@@ -13,6 +13,7 @@ vi.mock("../../api/client", async () => {
   return {
     ...actual,
     generateBot: vi.fn(),
+    getConfig: vi.fn(async () => ({ llm_provider: "antigravity", llm_provider_kinds: ["antigravity"] })),
     post: postMock,
   };
 });
@@ -105,5 +106,17 @@ describe("<AgentWizard>", () => {
       Record<string, unknown>,
     ];
     expect(body.personality).toBeUndefined();
+  });
+
+  it("creates an Antigravity bot using the account default model", async () => {
+    postMock.mockResolvedValue({});
+    render(wrap(<BotWizard open={true} onClose={vi.fn()} />));
+    fireEvent.click(screen.getByRole("button", { name: "Manual" }));
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Google Assistant" } });
+    await screen.findByRole("option", { name: "Antigravity · Google 会员" });
+    fireEvent.change(screen.getByLabelText("Runtime"), { target: { value: "antigravity" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create" }));
+    await waitFor(() => expect(postMock).toHaveBeenCalled());
+    expect(postMock.mock.calls[0][1].provider).toEqual({ kind: "antigravity" });
   });
 });

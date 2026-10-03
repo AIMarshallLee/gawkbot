@@ -383,7 +383,7 @@ func fixSymlinkMissing() error {
 	if _, err := os.Stat(expectedTarget); err != nil {
 		return fmt.Errorf("symlink:missing: target %s does not exist: %w", expectedTarget, err)
 	}
-	if err := os.Symlink(expectedTarget, symlinkPath); err != nil {
+	if err := createDirectoryLink(expectedTarget, symlinkPath); err != nil {
 		return fmt.Errorf("symlink:missing: create %s → %s: %w", symlinkPath, expectedTarget, err)
 	}
 	return nil
@@ -415,7 +415,7 @@ func fixSymlinkWrong() error {
 	if _, err := os.Stat(expectedTarget); err != nil {
 		return fmt.Errorf("symlink:wrong: target %s does not exist: %w", expectedTarget, err)
 	}
-	if err := os.Symlink(expectedTarget, symlinkPath); err != nil {
+	if err := createDirectoryLink(expectedTarget, symlinkPath); err != nil {
 		return fmt.Errorf("symlink:wrong: recreate %s → %s: %w", symlinkPath, expectedTarget, err)
 	}
 	return nil

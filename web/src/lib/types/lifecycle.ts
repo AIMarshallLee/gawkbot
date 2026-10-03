@@ -88,13 +88,13 @@ export const STAGE_ORDER: readonly LifecycleStage[] = [
 
 /** Column header label per stage. */
 export const STAGE_LABELS: Record<LifecycleStage, string> = {
-  scheduled: "Scheduled Tasks",
-  backlog: "Backlog",
-  in_progress: "In progress",
-  blocked: "Blocked",
-  needs_human: "Needs human input",
-  done: "Done",
-  archive: "Archive",
+  scheduled: "定时任务 · Scheduled",
+  backlog: "待办需求 · Backlog",
+  in_progress: "正在执行 · In progress",
+  blocked: "执行受阻 · Blocked",
+  needs_human: "待人工审核 · Needs human input",
+  done: "已完成 · Done",
+  archive: "历史归档 · Archive",
 };
 
 /**
@@ -363,87 +363,70 @@ export const STATE_PILL_TOKENS: Record<
   LifecycleState,
   { bg: string; text: string; label: string }
 > = {
-  /**
-   * drafting: explicitly PARKED (composer Backlog/park, or a legacy
-   * persisted draft) — bots can comment but not dispatch; the human
-   * starts it from the task page. Uses brand-accent tokens (--accent-bg /
-   * --accent) to signal "yours to start" — distinct from intake/ready
-   * (--bg-row-active) which use a neutral palette.
-   */
   drafting: {
     bg: "var(--accent-bg)",
     text: "var(--accent)",
-    label: "parked",
+    label: "待启动 · parked",
   },
-  /**
-   * planning: structured planning (Plan mode) — the owner is writing a plan
-   * read-only and the human approves it before execution. Uses accent tokens
-   * like drafting because it is also pre-execution and awaits a human approval.
-   */
   planning: {
     bg: "var(--accent-bg)",
     text: "var(--accent)",
-    label: "planning",
+    label: "规划中 · planning",
   },
   intake: {
     bg: "var(--bg-row-active)",
     text: "var(--text-secondary)",
-    label: "intake",
+    label: "待排期 · intake",
   },
   ready: {
     bg: "var(--bg-row-active)",
     text: "var(--text-secondary)",
-    label: "ready",
+    label: "就绪 · ready",
   },
   running: {
     bg: "var(--cyan-200)",
     text: "var(--cyan-500)",
-    label: "running",
+    label: "运行中 · running",
   },
   review: {
     bg: "var(--cyan-200)",
     text: "var(--cyan-500)",
-    label: "review",
+    label: "审查中 · review",
   },
   decision: {
     bg: "var(--success-200)",
     text: "var(--success-500)",
-    label: "decision",
+    label: "待决策 · decision",
   },
   blocked: {
     bg: "var(--warning-200)",
     text: "var(--warning-500)",
-    label: "blocked",
+    label: "已阻塞 · blocked",
   },
   queued_behind_owner: {
     bg: "var(--warning-200)",
     text: "var(--warning-500)",
-    label: "queued",
+    label: "排队中 · queued",
   },
   changes_requested: {
     bg: "var(--bg-row-active)",
     text: "var(--warning-500)",
-    label: "changes requested",
+    label: "要求修改 · changes requested",
   },
   approved: {
     bg: "var(--bg-row-active)",
     text: "var(--text-tertiary)",
-    label: "approved",
+    label: "已批准 · approved",
   },
   rejected: {
     bg: "var(--danger-200, var(--warning-200))",
     text: "var(--danger-500, var(--warning-500))",
-    label: "rejected",
+    label: "已拒绝 · rejected",
   },
-  /**
-   * archived: terminal, muted. Lands in the board's Archive column
-   * alongside rejected. Styled neutral (no accent / no alarm color) to
-   * read as "filed away, no longer in flight".
-   */
   archived: {
     bg: "var(--bg-row-active)",
     text: "var(--text-tertiary)",
-    label: "archived",
+    label: "已归档 · archived",
   },
 };
 

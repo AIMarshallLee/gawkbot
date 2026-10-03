@@ -18,31 +18,31 @@ import type { SectionGroup } from "./types";
 // section switch.
 export const SECTION_GROUPS: SectionGroup[] = [
   {
-    label: "Workspace",
+    label: "Workspace · 工作区",
     items: [
-      { id: "general", Icon: SettingsIcon, name: "General" },
-      { id: "local-llms", Icon: Terminal, name: "Local LLMs" },
-      { id: "image-gen", Icon: MediaImage, name: "Image generation" },
-      { id: "company", Icon: Building, name: "Company" },
+      { id: "general", Icon: SettingsIcon, name: "General · 常规" },
+      { id: "local-llms", Icon: Terminal, name: "Local LLMs · 本地 LLM" },
+      { id: "image-gen", Icon: MediaImage, name: "Image generation · 图像生成" },
+      { id: "company", Icon: Building, name: "Company · 公司信息" },
     ],
   },
   {
-    label: "Credentials",
+    label: "Credentials · 凭据",
     items: [
-      { id: "keys", Icon: Key, name: "API Keys" },
-      { id: "integrations", Icon: Puzzle, name: "Integrations" },
+      { id: "keys", Icon: Key, name: "API Keys · API 密钥" },
+      { id: "integrations", Icon: Puzzle, name: "Integrations · 集成" },
     ],
   },
   {
-    label: "System",
+    label: "System · 系统",
     items: [
-      { id: "intervals", Icon: Timer, name: "Polling" },
-      { id: "flags", Icon: Terminal, name: "CLI Flags" },
-      { id: "privacy", Icon: Lock, name: "Privacy & Analytics" },
+      { id: "intervals", Icon: Timer, name: "Polling · 轮询" },
+      { id: "flags", Icon: Terminal, name: "CLI Flags · CLI 参数" },
+      { id: "privacy", Icon: Lock, name: "Privacy & Analytics · 隐私与分析" },
     ],
   },
   {
-    label: "Advanced",
-    items: [{ id: "danger", Icon: WarningTriangle, name: "Danger Zone" }],
+    label: "Advanced · 高级",
+    items: [{ id: "danger", Icon: WarningTriangle, name: "Danger Zone · 危险操作" }],
   },
 ];

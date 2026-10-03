@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import type { Message } from "../../api/client";
@@ -22,6 +22,7 @@ import { useAppStore } from "../../stores/app";
 import { HarnessBadge } from "../ui/HarnessBadge";
 import { PixelAvatar } from "../ui/PixelAvatar";
 import { showNotice } from "../ui/Toast";
+import { TranslateButton } from "../ui/TranslateButton";
 import {
   ArtifactSkeleton,
   useArtifactSkeletonTrigger,
@@ -481,16 +482,29 @@ function MessageBodyText({
   renderedText: string;
   humanRendered: ReactNode;
 }) {
+  const [translatedText, setTranslatedText] = useState<string | null>(null);
   if (!renderedText) return null;
   if (isHuman) return <div className="message-text">{humanRendered}</div>;
+
+  const hasEnglish = /[a-zA-Z]{4,}/.test(renderedText);
+  const activeText = translatedText ?? renderedText;
+
   return (
     <div className="message-text">
+      {hasEnglish ? (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 4 }}>
+          <TranslateButton
+            originalText={renderedText}
+            onToggle={(isZh, text) => setTranslatedText(isZh ? text : null)}
+          />
+        </div>
+      ) : null}
       <ReactMarkdown
         remarkPlugins={messageRemarkPlugins}
         components={messageMarkdownComponents}
         skipHtml={true}
       >
-        {renderedText}
+        {activeText}
       </ReactMarkdown>
     </div>
   );

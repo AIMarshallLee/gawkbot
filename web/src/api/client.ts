@@ -1124,6 +1124,9 @@ export type LLMRuntimeKind =
   | "ollama"
   | "codex"
   | "opencode"
+  | "antigravity"
+  | "antigravity-2"
+  | "custom"
   | "mlx-lm"
   | "exo";
 
@@ -1145,6 +1148,7 @@ export type ActionProvider = "auto" | "one" | "composio" | "";
 export interface ProviderEndpoint {
   base_url?: string;
   model?: string;
+  api_key?: string;
 }
 
 // LocalProviderStatus mirrors internal/team/local_providers_status.go.

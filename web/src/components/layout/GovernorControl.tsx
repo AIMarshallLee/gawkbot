@@ -2,6 +2,7 @@ import { useCallback } from "react";
 
 import type { GovernorStatus } from "../../api/governor";
 import { useGovernor, useGovernorAction } from "../../hooks/useGovernor";
+import { bilingual } from "../../lib/bilingual";
 import { meterSummary } from "./governorFormat";
 
 interface GovernorControlViewProps {
@@ -26,7 +27,7 @@ export function GovernorControlView({
   onStop,
 }: GovernorControlViewProps) {
   return (
-    <div className="governor-control" title="Session run control">
+    <div className="governor-control" title={bilingual("Session run control", "会话运行控制")}>
       {showMeter ? (
         <span className="governor-control-meter">{meterSummary(status)}</span>
       ) : null}
@@ -35,18 +36,18 @@ export function GovernorControlView({
         onClick={onPause}
         disabled={busy}
         type="button"
-        title="Pause after the current turn"
+        title={bilingual("Pause after the current turn", "当前回合后暂停")}
       >
-        Pause
+        {bilingual("Pause", "暂停")}
       </button>
       <button
         className="governor-control-btn governor-control-stop"
         onClick={onStop}
         disabled={busy}
         type="button"
-        title="Stop now and cancel in-flight work"
+        title={bilingual("Stop now and cancel in-flight work", "立即停止并取消进行中的工作")}
       >
-        Stop
+        {bilingual("Stop", "停止")}
       </button>
     </div>
   );

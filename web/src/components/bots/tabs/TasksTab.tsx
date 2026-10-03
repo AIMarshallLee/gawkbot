@@ -9,6 +9,7 @@ import type { Task } from "../../../api/tasks";
 import { taskToLifecycleState } from "../../../api/tasks";
 import { useOfficeTasks } from "../../../hooks/useOfficeTasks";
 import { formatTaskTitleForDisplay } from "../../../lib/taskTitle";
+import { bilingual } from "../../../lib/bilingual";
 import {
   type LifecycleStage,
   STAGE_LABELS,
@@ -37,7 +38,7 @@ const BotTaskCard = memo(function TaskCard({ task }: { task: Task }) {
       aria-label={`Task: ${formatTaskTitleForDisplay(task.title)}, state: ${state}`}
     >
       <div className="issues-kanban-card-title">
-        {formatTaskTitleForDisplay(task.title) || "Untitled"}
+        {formatTaskTitleForDisplay(task.title) || bilingual("Untitled", "未命名")}
       </div>
       <div className="issues-kanban-card-meta">
         <LifecycleStatePill state={state} />
@@ -70,7 +71,7 @@ export function TasksTab({ agentSlug }: TasksTabProps) {
   if (isLoading) {
     return (
       <div className="bot-tasks-tab bot-tasks-tab--loading">
-        <p className="bot-tasks-empty">Loading tasks…</p>
+        <p className="bot-tasks-empty">{bilingual("Loading tasks…", "正在加载任务…")}</p>
       </div>
     );
   }
@@ -88,7 +89,7 @@ export function TasksTab({ agentSlug }: TasksTabProps) {
   if (botTasks.length === 0) {
     return (
       <div className="bot-tasks-tab">
-        <p className="bot-tasks-empty">No tasks owned by @{agentSlug} yet.</p>
+        <p className="bot-tasks-empty">{bilingual(`No tasks owned by @${agentSlug} yet.`, `@${agentSlug} 暂无负责的任务。`)}</p>
       </div>
     );
   }

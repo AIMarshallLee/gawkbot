@@ -102,7 +102,7 @@ export function TaskContextRail({
        *  streams activity. */}
       <TaskActivity taskId={taskId} agentSlug={ownerSlug} />
       <RailSection
-        title="Details"
+        title="Details · 任务详情"
         defaultOpen={isDrafting}
         testId="task-rail-details"
       >
@@ -113,8 +113,8 @@ export function TaskContextRail({
             data-testid="task-verification-dod"
           >
             <span className="task-verification-dod-label">
-              Definition of done
-              {verification.required ? " (required)" : ""}
+              Definition of done · 验收标准 (DoD)
+              {verification.required ? " (required · 必填)" : ""}
             </span>
             <code className="task-verification-dod-spec">
               {verification.spec
@@ -126,7 +126,7 @@ export function TaskContextRail({
         <TaskDescription description={description} isDrafting={isDrafting} />
       </RailSection>
       <RailSection
-        title="Activity"
+        title="Activity · 活动记录"
         defaultOpen={false}
         testId="task-rail-activity"
       >
@@ -134,7 +134,7 @@ export function TaskContextRail({
       </RailSection>
       {showSubTasks ? (
         <RailSection
-          title="Sub-tasks"
+          title="Sub-tasks · 子任务"
           defaultOpen={false}
           testId="task-rail-subtasks"
         >

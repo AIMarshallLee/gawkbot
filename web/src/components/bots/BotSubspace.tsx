@@ -25,6 +25,7 @@ import { Eye } from "iconoir-react";
 
 import type { OfficeMember } from "../../api/client";
 import { useDefaultHarness } from "../../hooks/useConfig";
+import { bilingual } from "../../lib/bilingual";
 import { resolveHarness } from "../../lib/harness";
 import { humanizeActivity } from "../../lib/humanizeActivity";
 import { router } from "../../lib/router";
@@ -54,16 +55,16 @@ export type BotTab =
   | "config";
 
 export const AGENT_TABS: Array<{ id: BotTab; label: string }> = [
-  { id: "chat", label: "Chat" },
+  { id: "chat", label: bilingual("Chat", "聊天") },
   // Right after Chat: watching the bot work is the second thing a gawker
   // reaches for, and the screen is where a mid-turn "needs hands" lands.
-  { id: "computer", label: "Computer" },
-  { id: "tasks", label: "Tasks" },
-  { id: "skills", label: "Skills" },
-  { id: "knowledge", label: "Knowledge" },
-  { id: "policies", label: "Policies" },
-  { id: "live-stream", label: "Live Stream" },
-  { id: "config", label: "Config" },
+  { id: "computer", label: bilingual("Computer", "电脑") },
+  { id: "tasks", label: bilingual("Tasks", "任务") },
+  { id: "skills", label: bilingual("Skills", "技能") },
+  { id: "knowledge", label: bilingual("Knowledge", "知识") },
+  { id: "policies", label: bilingual("Policies", "策略") },
+  { id: "live-stream", label: bilingual("Live Stream", "实时动态") },
+  { id: "config", label: bilingual("Config", "配置") },
 ];
 
 // ── Props ────────────────────────────────────────────────────────
@@ -133,7 +134,7 @@ function ShellHeader({ agent, onTeachWorkflow }: ShellHeaderProps) {
             <EditableName agent={agent} />
             <span
               className={`status-dot ${statusClass}`}
-              title={agent.status === "active" ? "Active" : "Idle"}
+              title={agent.status === "active" ? bilingual("Active", "活跃") : bilingual("Idle", "空闲")}
               aria-hidden="true"
             />
           </div>
@@ -143,11 +144,11 @@ function ShellHeader({ agent, onTeachWorkflow }: ShellHeaderProps) {
           <div className="bot-subspace-header-status-row">
             {agent.status === "active" ? (
               <span className="bot-subspace-status-badge bot-subspace-status-badge--active">
-                Working
+                {bilingual("Working", "工作中")}
               </span>
             ) : (
               <span className="bot-subspace-status-badge bot-subspace-status-badge--idle">
-                Idle
+                {bilingual("Idle", "空闲")}
               </span>
             )}
             {agent.task && agent.status === "active" ? (
@@ -170,7 +171,7 @@ function ShellHeader({ agent, onTeachWorkflow }: ShellHeaderProps) {
           title={`Show ${agent.name || agent.slug} a workflow on a screenshare`}
         >
           <Eye width={14} height={14} aria-hidden="true" />
-          Teach a workflow
+          {bilingual("Teach a workflow", "教授工作流程")}
         </button>
       </div>
     </div>
@@ -199,7 +200,7 @@ function TabBar({ agentSlug, activeTab }: TabBarProps) {
     <div
       className="bot-subspace-tabbar"
       role="tablist"
-      aria-label="Bot sections"
+      aria-label={bilingual("Bot sections", "机器人栏目")}
     >
       {AGENT_TABS.map((t) => {
         const isActive = t.id === activeTab;

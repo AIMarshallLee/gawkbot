@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -61,6 +62,9 @@ func (b *Broker) initGovernor() {
 	b.governor = newGovernor(loadGovernorConfig(), 0, 0)
 	tok, cost := b.sessionUsageSnapshot()
 	b.governor.rebaseline(tok, cost)
+	if envTruthy(os.Getenv("WUPHF_START_PAUSED")) {
+		b.governor.pauseManual(pauseManual)
+	}
 }
 
 // sessionUsageSnapshot returns the current session's cumulative tokens and cost

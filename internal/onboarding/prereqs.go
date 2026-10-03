@@ -64,12 +64,13 @@ var prereqSpecs = map[string]prereqSpec{
 	"claude":   {required: false, installURL: "https://claude.ai/code"},
 	"codex":    {required: false, installURL: "https://github.com/openai/codex"},
 	"opencode": {required: false, installURL: "https://opencode.ai"},
+	"agy":      {required: false, installURL: "https://antigravity.google/docs/cli/install"},
 	"cursor":   {required: false, installURL: "https://cursor.com/"},
 	"windsurf": {required: false, installURL: "https://codeium.com/windsurf"},
 }
 
 // CheckAll returns a PrereqResult for each tracked binary in a stable order:
-// node, git, claude, codex, opencode, cursor, windsurf. At least one of the
+// node, git, claude, codex, opencode, agy, cursor, windsurf. At least one of the
 // CLI runtimes must be present for wuphf to actually run a turn, but all are
 // marked optional here so the user can proceed with whichever runtime
 // they have.
@@ -86,7 +87,7 @@ var prereqSpecs = map[string]prereqSpec{
 // of leaking them. Pass context.Background() only from tests or boot paths
 // that have no request lifecycle.
 func CheckAll(ctx context.Context) []PrereqResult {
-	names := []string{"node", "git", "claude", "codex", "opencode", "cursor", "windsurf"}
+	names := []string{"node", "git", "claude", "codex", "opencode", "agy", "cursor", "windsurf"}
 	results := make([]PrereqResult, len(names))
 	var wg sync.WaitGroup
 	wg.Add(len(names))

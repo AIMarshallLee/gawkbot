@@ -44,15 +44,15 @@ export function selfAccessDetails(hostname: string, origin: string) {
   if (normalizedHost === "localhost" || normalizedHost === "127.0.0.1") {
     return {
       detail:
-        "For a server you reach through SSH, keep the tunnel open while you work.",
+        "For a server you reach through SSH, keep the tunnel open while you work. · 通过 SSH 访问服务器时，请在工作期间保持隧道连接。",
       code: "ssh -L 7890:localhost:7890 user@server",
-      footer: "Then open http://localhost:7890",
+      footer: "Then open http://localhost:7890 · 然后打开此地址",
     };
   }
   return {
-    detail: "This browser is already connected through the network web UI.",
+    detail: "This browser is already connected through the network web UI. · 此浏览器已通过网络 Web UI 连接。",
     code: origin,
-    footer: "Use team-member invites for scoped shared sessions.",
+    footer: "Use team-member invites for scoped shared sessions. · 请使用团队成员邀请来创建受限共享会话。",
   };
 }
 
@@ -162,17 +162,17 @@ function AccessCards({
     >
       <div className="app-card" style={{ minHeight: 126 }}>
         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
-          This browser
+          This browser · 当前浏览器
         </div>
         <div className="app-card-meta" style={{ marginBottom: 10 }}>
-          Signed in as {humanLabel}
+          Signed in as {humanLabel} · 当前登录身份
         </div>
         <span
           className={
             brokerConnected ? "badge badge-green" : "badge badge-yellow"
           }
         >
-          {brokerConnected ? "Live event stream" : "Reconnecting events"}
+          {brokerConnected ? "Live event stream · 实时事件流" : "Reconnecting events · 正在重连事件流"}
         </span>
       </div>
 
@@ -215,7 +215,7 @@ function SelfAccessCard({
   return (
     <div className="app-card" style={{ minHeight: 126 }}>
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
-        Access for you
+        Access for you · 你的访问方式
       </div>
       <div className="app-card-meta" style={{ marginBottom: 8 }}>
         {selfAccess.detail}
@@ -270,10 +270,10 @@ export function PairPhoneCard({ isHost }: { isHost: boolean }) {
   return (
     <div className="app-card" style={{ minHeight: 126 }}>
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
-        Pair your phone
+        Pair your phone · 配对手机
       </div>
       {!isHost ? (
-        <div className="app-card-meta">Phone pairing is host-only.</div>
+        <div className="app-card-meta">Phone pairing is host-only. · 仅主机可配对手机。</div>
       ) : (
         <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
           {dataURL ? (
@@ -285,7 +285,7 @@ export function PairPhoneCard({ isHost }: { isHost: boolean }) {
               style={{ borderRadius: 6, background: "#fff", flex: "0 0 auto" }}
             />
           ) : (
-            <div className="app-card-meta">Preparing code…</div>
+            <div className="app-card-meta">Preparing code… · 正在生成配对码…</div>
           )}
           <div className="app-card-meta" style={{ lineHeight: 1.4 }}>
             Open gawkbot on your iPhone and scan this. The phone must reach this
@@ -309,7 +309,7 @@ export function PairPhoneCard({ isHost }: { isHost: boolean }) {
                     });
                   }}
                 >
-                  {copied ? "Copied" : "Copy pairing link"}
+                  {copied ? "Copied · 已复制" : "Copy pairing link · 复制配对链接"}
                 </button>
               </div>
             ) : null}
@@ -348,10 +348,10 @@ function TeamInviteCard({
   return (
     <div className="app-card" style={{ minHeight: 126 }}>
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
-        Invite a team member
+        Invite a team member · 邀请团队成员
       </div>
       {!isHost ? (
-        <div className="app-card-meta">Team-member invites are host-only.</div>
+        <div className="app-card-meta">Team-member invites are host-only. · 仅主机可邀请团队成员。</div>
       ) : (
         <HostInviteControls
           inviteCopied={inviteCopied}
@@ -396,7 +396,7 @@ function HostInviteControls({
   return (
     <>
       <div className="app-card-meta" style={{ marginBottom: 8 }}>
-        Create a one-use private-network invite from this browser.
+        Create a one-use private-network invite from this browser. · 从当前浏览器创建一次性私有网络邀请。
       </div>
       <div
         style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}
@@ -407,7 +407,7 @@ function HostInviteControls({
           onClick={onStartShareInvite}
           disabled={shareMutationPending}
         >
-          {shareRunning ? "Create new invite" : "Create invite"}
+          {shareRunning ? "Create new invite · 新建邀请" : "Create invite · 创建邀请"}
         </button>
         {shareRunning ? (
           <button
@@ -416,7 +416,7 @@ function HostInviteControls({
             onClick={onStopShareInvite}
             disabled={shareMutationPending}
           >
-            Stop sharing
+            Stop sharing · 停止共享
           </button>
         ) : null}
       </div>
@@ -448,7 +448,7 @@ function HostInviteControls({
             type="button"
             onClick={onCopyInvite}
           >
-            {inviteCopied ? "Copied" : "Copy"}
+            {inviteCopied ? "Copied · 已复制" : "Copy · 复制"}
           </button>
         </div>
       ) : null}
@@ -505,10 +505,10 @@ function TunnelInviteCard({
   return (
     <div className="app-card" style={{ minHeight: 126 }}>
       <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
-        Public tunnel invite
+        Public tunnel invite · 公网隧道邀请
       </div>
       {!isHost ? (
-        <div className="app-card-meta">Public tunnels are host-only.</div>
+        <div className="app-card-meta">Public tunnels are host-only. · 仅主机可使用公网隧道。</div>
       ) : (
         <HostTunnelControls
           inviteCopied={inviteCopied}
@@ -563,10 +563,10 @@ function HostTunnelControls({
           disabled={tunnelMutationPending}
         >
           {tunnelMutationPending && !tunnelRunning
-            ? "Starting tunnel..."
+            ? "Starting tunnel... · 正在启动隧道…"
             : tunnelRunning
-              ? "Create new invite"
-              : "Start public tunnel"}
+              ? "Create new invite · 新建邀请"
+              : "Start public tunnel · 启动公网隧道"}
         </button>
         {tunnelRunning ? (
           <button
@@ -575,7 +575,7 @@ function HostTunnelControls({
             onClick={onStopTunnelInvite}
             disabled={tunnelMutationPending}
           >
-            Stop tunnel
+            Stop tunnel · 停止隧道
           </button>
         ) : null}
       </div>
@@ -607,7 +607,7 @@ function HostTunnelControls({
             type="button"
             onClick={onCopyInvite}
           >
-            {inviteCopied ? "Copied" : "Copy"}
+            {inviteCopied ? "Copied · 已复制" : "Copy · 复制"}
           </button>
         </div>
       ) : null}
@@ -688,7 +688,7 @@ function BrokerStatusCard({
         style={{ width: 10, height: 10 }}
       />
       <div>
-        <div style={{ fontWeight: 600, fontSize: 14 }}>Broker Status</div>
+        <div style={{ fontWeight: 600, fontSize: 14 }}>Broker Status · Broker 状态</div>
         <div className="app-card-meta">
           <span
             className={isHealthy ? "badge badge-green" : "badge badge-yellow"}
@@ -773,7 +773,7 @@ function RuntimeStatusList({
 }) {
   return (
     <>
-      <SectionLabel>Runtime</SectionLabel>
+      <SectionLabel>Runtime · 运行时</SectionLabel>
       {items.map((item) => (
         <StatusRow
           key={item.label}
@@ -808,13 +808,13 @@ function ProviderCliStatusList({
   );
   return (
     <>
-      <SectionLabel>Provider CLIs</SectionLabel>
-      {isLoading ? <EmptyCard>Detecting provider CLIs...</EmptyCard> : null}
+      <SectionLabel>Provider CLIs · 提供商 CLI</SectionLabel>
+      {isLoading ? <EmptyCard>Detecting provider CLIs... · 正在检测提供商 CLI…</EmptyCard> : null}
       {error ? (
-        <EmptyCard>Could not detect provider CLIs from the broker.</EmptyCard>
+        <EmptyCard>Could not detect provider CLIs from the broker. · 无法从 Broker 检测提供商 CLI。</EmptyCard>
       ) : null}
       {!(isLoading || error) && items.length === 0 ? (
-        <EmptyCard>No provider CLI checks returned.</EmptyCard>
+        <EmptyCard>No provider CLI checks returned. · 未返回提供商 CLI 检查结果。</EmptyCard>
       ) : null}
       {!(isLoading || error)
         ? items.map((item) => (

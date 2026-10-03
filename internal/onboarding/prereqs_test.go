@@ -38,12 +38,12 @@ func TestCheckOneNonexistentBinary(t *testing.T) {
 	}
 }
 
-func TestCheckAllReturnsSevenItems(t *testing.T) {
+func TestCheckAllReturnsEightItems(t *testing.T) {
 	results := CheckAll(context.Background())
-	if len(results) != 7 {
-		t.Fatalf("CheckAll: got %d results, want 7", len(results))
+	if len(results) != 8 {
+		t.Fatalf("CheckAll: got %d results, want 8", len(results))
 	}
-	names := []string{"node", "git", "claude", "codex", "opencode", "cursor", "windsurf"}
+	names := []string{"node", "git", "claude", "codex", "opencode", "agy", "cursor", "windsurf"}
 	for i, r := range results {
 		if r.Name != names[i] {
 			t.Errorf("CheckAll[%d].Name: got %q, want %q", i, r.Name, names[i])
@@ -60,6 +60,7 @@ func TestCheckAllRequiredFlags(t *testing.T) {
 		"claude":   false,
 		"codex":    false,
 		"opencode": false,
+		"agy":      false,
 		"cursor":   false,
 		"windsurf": false,
 	}
@@ -81,6 +82,7 @@ func TestCheckAllInstallURLs(t *testing.T) {
 		"claude":   "https://claude.ai/code",
 		"codex":    "https://github.com/openai/codex",
 		"opencode": "https://opencode.ai",
+		"agy":      "https://antigravity.google/docs/cli/install",
 		"cursor":   "https://cursor.com/",
 		"windsurf": "https://codeium.com/windsurf",
 	}

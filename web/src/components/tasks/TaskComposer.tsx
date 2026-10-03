@@ -276,10 +276,10 @@ export function TaskComposer() {
   return (
     <main className="task-composer-screen" data-testid="task-composer">
       <div className="task-composer">
-        <h1 className="task-composer-title">What do you want to get done?</h1>
+        <h1 className="task-composer-title">What do you want to get done? · 你想完成什么？</h1>
         <p className="task-composer-subtitle">
           Describe the outcome. The team starts immediately, and watches each
-          other do it — you review the delivered work.
+          other do it — you review the delivered work. · 描述目标，团队立即开始协作，你来验收交付成果。
         </p>
         <form className="task-composer-form" onSubmit={handleSubmit}>
           <textarea
@@ -287,14 +287,14 @@ export function TaskComposer() {
             className="task-composer-input"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g. Draft a Q3 outbound sequence for mid-market RevOps leaders and book a review."
+            placeholder="e.g. Draft a Q3 outbound sequence and book a review. · 例如：起草第三季度客户开发方案，并安排评审。"
             rows={4}
             data-testid="task-composer-input"
           />
 
           <div className="task-composer-chips">
             <label className="task-chip">
-              <span className="task-chip-label">Owner</span>
+              <span className="task-chip-label">Owner · 负责人</span>
               <select
                 className="task-chip-select"
                 value={ownerSlug}
@@ -304,7 +304,7 @@ export function TaskComposer() {
                 {/* The roster may still be loading; keep the default lead
                     selectable so the select never falls back to Auto. */}
                 {members.some((m) => m.slug === leadSlug) ? null : (
-                  <option value={leadSlug}>Chief of Staff</option>
+                  <option value={leadSlug}>Chief of Staff · 协调负责人</option>
                 )}
                 {members.map((m) => (
                   <option key={m.slug} value={m.slug}>
@@ -314,12 +314,12 @@ export function TaskComposer() {
                 {/* Auto stays an explicit opt-in: the Chief of Staff picks the best
                     specialist. It is no longer the default — an ownerless
                     first task read as "parked" to new users. */}
-                <option value={AUTO_OWNER}>Auto — Chief of Staff picks</option>
+                <option value={AUTO_OWNER}>Auto — Chief of Staff picks · 自动分配</option>
               </select>
             </label>
 
             <label className="task-chip">
-              <span className="task-chip-label">Provider</span>
+              <span className="task-chip-label">Provider · 模型服务</span>
               <select
                 className="task-chip-select"
                 value={providerKind}
@@ -337,7 +337,7 @@ export function TaskComposer() {
             </label>
 
             <label className="task-chip">
-              <span className="task-chip-label">Model</span>
+              <span className="task-chip-label">Model · 模型</span>
               <select
                 className="task-chip-select"
                 value={
@@ -360,7 +360,7 @@ export function TaskComposer() {
               className="task-chip"
               data-disabled={effortEnabled ? undefined : "true"}
             >
-              <span className="task-chip-label">Effort</span>
+              <span className="task-chip-label">Effort · 思考强度</span>
               <select
                 className="task-chip-select"
                 value={effort}
@@ -386,7 +386,7 @@ export function TaskComposer() {
             Owner <strong>{ownerLabel}</strong> · runs on{" "}
             <strong>{runtimeLabel}</strong>
             {effort ? ` · ${effort} effort` : ""}. Model and effort apply to
-            this task only.
+            this task only. · 以上负责人、模型和思考强度仅用于本次任务。
           </p>
 
           {error ? (
@@ -411,27 +411,27 @@ export function TaskComposer() {
               }
               data-testid="task-composer-start"
             >
-              {submitting ? "Creating…" : "Start now"}
+              {submitting ? "Creating… · 创建中…" : "Start now · 立即开始"}
             </button>
             <button
               type="button"
               className="task-composer-btn"
               onClick={() => void handleCreate("backlog")}
               disabled={submitting}
-              title="Park in the backlog (assigned) — nobody starts until you start it from the task page"
+              title="Park in the backlog (assigned) — nobody starts until you start it from the task page · 加入待办，等你手动启动"
               data-testid="task-composer-backlog"
             >
-              Backlog
+              Backlog · 待办
             </button>
             <button
               type="button"
               className="task-composer-btn"
               onClick={() => void handleCreate("routine")}
               disabled={submitting}
-              title="Set up as a recurring routine on a schedule"
+              title="Set up as a recurring routine on a schedule · 设置为按计划重复运行的任务"
               data-testid="task-composer-routine"
             >
-              Routine
+              Routine · 定时任务
             </button>
           </div>
         </form>

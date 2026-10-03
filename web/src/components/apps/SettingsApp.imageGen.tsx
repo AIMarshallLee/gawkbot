@@ -34,16 +34,16 @@ function StatusDot({ s }: { s: ImageProviderStatus }) {
   let title = "Unknown";
   if (s.implementation_ok && s.configured) {
     color = "#16a34a";
-    title = "Configured + ready";
+    title = "Configured + ready · 已配置并就绪";
   } else if (s.implementation_ok && s.needs_api_key && !s.api_key_set) {
     color = "#d97706";
-    title = "API key missing";
+    title = "API key missing · 缺少 API 密钥";
   } else if (!s.implementation_ok) {
     color = "#6b7280";
-    title = "Stub — backend pending";
+    title = "Stub — backend pending · 占位实现，等待后端";
   } else {
     color = "#dc2626";
-    title = "Misconfigured";
+    title = "Misconfigured · 配置错误";
   }
   return (
     <span
@@ -89,11 +89,11 @@ function ProviderCard({ s }: { s: ImageProviderStatus }) {
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["image-providers"] });
-      showNotice(`${s.label} updated`, "success");
+      showNotice(`${s.label} updated · 已更新`, "success");
       setApiKey("");
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Update failed";
+      const msg = err instanceof Error ? err.message : "Update failed · 更新失败";
       showNotice(msg, "error");
     },
   });
@@ -156,7 +156,7 @@ function ProviderCard({ s }: { s: ImageProviderStatus }) {
               id={apiKeyId}
               type={showKey ? "text" : "password"}
               value={apiKey}
-              placeholder={s.api_key_set ? "•••••• (replace)" : "paste here"}
+              placeholder={s.api_key_set ? "•••••• (replace · 替换)" : "paste here · 在此粘贴"}
               onChange={(e) => setApiKey(e.target.value)}
               style={inputStyle}
             />
@@ -166,7 +166,7 @@ function ProviderCard({ s }: { s: ImageProviderStatus }) {
               onClick={() => setShowKey((v) => !v)}
               style={{ flexShrink: 0 }}
             >
-              {showKey ? "hide" : "show"}
+              {showKey ? "hide · 隐藏" : "show · 显示"}
             </button>
           </div>
         </div>
@@ -189,7 +189,7 @@ function ProviderCard({ s }: { s: ImageProviderStatus }) {
             type="text"
             value={baseURL}
             onChange={(e) => setBaseURL(e.target.value)}
-            placeholder={s.base_url || "default"}
+            placeholder={s.base_url || "default · 默认"}
             style={inputStyle}
           />
         </div>
@@ -202,7 +202,7 @@ function ProviderCard({ s }: { s: ImageProviderStatus }) {
             type="text"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            placeholder={s.default_model || "default"}
+            placeholder={s.default_model || "default · 默认"}
             style={inputStyle}
           />
         </div>
@@ -215,7 +215,7 @@ function ProviderCard({ s }: { s: ImageProviderStatus }) {
           disabled={mutation.isPending}
           onClick={() => mutation.mutate()}
         >
-          {mutation.isPending ? "Saving…" : "Save"}
+          {mutation.isPending ? "Saving… · 正在保存…" : "Save · 保存"}
         </button>
       </div>
     </div>
@@ -231,7 +231,7 @@ export function ImageGenSection() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: 24, color: "var(--text-tertiary)" }}>Loading…</div>
+      <div style={{ padding: 24, color: "var(--text-tertiary)" }}>Loading… · 正在加载…</div>
     );
   }
   if (error) {
@@ -247,7 +247,7 @@ export function ImageGenSection() {
   return (
     <div style={{ padding: "20px 24px" }}>
       <header style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Image generation</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Image generation · 图像生成</h2>
         <p
           style={{
             fontSize: 13,
@@ -256,7 +256,7 @@ export function ImageGenSection() {
             lineHeight: 1.5,
           }}
         >
-          Backends Artist can call via the <code>image_generate</code> tool.
+          Backends Artist can call via the <code>image_generate</code> tool. · Artist 可通过该工具调用这些后端。
           Paste an API key + (optional) base URL + default model. Status dot:
           green = ready, amber = needs key, grey = stub (backend not yet wired).
         </p>

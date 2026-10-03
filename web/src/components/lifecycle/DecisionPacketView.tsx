@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Globe, Loader2 } from "lucide-react";
 
 import { router } from "../../lib/router";
+import { translateToChinese } from "../../lib/translateService";
 import type {
   DecisionPacket,
   FeedbackItem,
   LifecycleState,
   PacketBanner,
 } from "../../lib/types/lifecycle";
+import { Bilingual } from "../ui/Bilingual";
 import { LifecycleStatePill } from "./LifecycleStatePill";
 import { PacketActionSidebar } from "./PacketActionSidebar";
 import { SeverityGradeCard } from "./SeverityGradeCard";
@@ -95,6 +98,43 @@ export function DecisionPacketView({
   const gradedCount = grades.filter((g) => g.severity !== "skipped").length;
   const skippedCount = grades.filter((g) => g.severity === "skipped").length;
 
+  const [isTranslatingAll, setIsTranslatingAll] = useState(false);
+  const [isAllTranslated, setIsAllTranslated] = useState(false);
+  const [translatedMap, setTranslatedMap] = useState<Record<string, string>>({});
+
+  const toggleTranslateAll = async () => {
+    if (isTranslatingAll) return;
+    if (isAllTranslated) {
+      setIsAllTranslated(false);
+      return;
+    }
+    setIsTranslatingAll(true);
+    try {
+      const [titleZh, assignZh, problemZh, highlightsZh] = await Promise.all([
+        packet.title ? translateToChinese(packet.title) : Promise.resolve(""),
+        packet.spec.assignment ? translateToChinese(packet.spec.assignment) : Promise.resolve(""),
+        packet.spec.problem ? translateToChinese(packet.spec.problem) : Promise.resolve(""),
+        packet.sessionReport.highlights ? translateToChinese(packet.sessionReport.highlights) : Promise.resolve(""),
+      ]);
+      setTranslatedMap({
+        title: titleZh,
+        assignment: assignZh,
+        problem: problemZh,
+        highlights: highlightsZh,
+      });
+      setIsAllTranslated(true);
+    } catch (err) {
+      console.error("Translation error", err);
+    } finally {
+      setIsTranslatingAll(false);
+    }
+  };
+
+  const displayTitle = isAllTranslated ? (translatedMap.title || packet.title) : packet.title;
+  const displayAssignment = isAllTranslated ? (translatedMap.assignment || packet.spec.assignment) : packet.spec.assignment;
+  const displayProblem = isAllTranslated ? (translatedMap.problem || packet.spec.problem) : packet.spec.problem;
+  const displayHighlights = isAllTranslated ? (translatedMap.highlights || packet.sessionReport.highlights) : packet.sessionReport.highlights;
+
   return (
     <div className="packet-shell">
       <PacketLeftColumn packet={packet} />
@@ -102,12 +142,37 @@ export function DecisionPacketView({
         {hasPersistenceError ? <PersistenceBanner /> : null}
         {hasReviewerTimeout ? <ReviewerTimeoutForcedBanner /> : null}
         {packet.regeneratedFromMemory ? <RegeneratedBanner /> : null}
-        <PacketMeta packet={packet} />
-        <h1 className="packet-task-title">{packet.title}</h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <PacketMeta packet={packet} />
+          <button
+            type="button"
+            className={`translate-btn ${isAllTranslated ? "is-translated" : ""}`}
+            onClick={toggleTranslateAll}
+            disabled={isTranslatingAll}
+            style={{ padding: "6px 14px", fontSize: "12px", borderRadius: "6px" }}
+            title={isAllTranslated ? "点击恢复显示英文原文" : "一键将标题、需求规范、决策说明、变更亮点翻译为中文"}
+          >
+            {isTranslatingAll ? (
+              <Loader2 size={14} className="spin" />
+            ) : (
+              <Globe size={14} />
+            )}
+            <span>
+              {isTranslatingAll
+                ? "正在翻译…"
+                : isAllTranslated
+                  ? "🌐 还原英文原文"
+                  : "🌐 一键翻译审核内容为中文"}
+            </span>
+          </button>
+        </div>
+        <h1 className="packet-task-title">{displayTitle}</h1>
 
         <div className="packet-assignment">
-          <div className="label">Your call</div>
-          <p>{packet.spec.assignment}</p>
+          <div className="label">
+            <Bilingual en="Your call" zh="您的决策" layout="inline" />
+          </div>
+          <p>{displayAssignment}</p>
         </div>
 
         <section
@@ -115,12 +180,12 @@ export function DecisionPacketView({
           aria-label="Spec and acceptance criteria"
         >
           <h3>
-            Spec{" "}
+            Spec · 需求规范{" "}
             <span className="count">
-              {acDoneCount}/{acTotal} acceptance criteria done
+              {acDoneCount}/{acTotal} acceptance criteria done · 已完成 {acDoneCount}/{acTotal} 项验收标准
             </span>
           </h3>
-          <p>{packet.spec.problem}</p>
+          <p>{displayProblem}</p>
           <div className="packet-ac">
             {packet.spec.acceptanceCriteria.map((ac, idx) => (
               <div
@@ -138,26 +203,30 @@ export function DecisionPacketView({
 
         <section className="packet-section" aria-label="Session report">
           <h3 className={isStreaming ? "is-streaming" : undefined}>
-            What changed{" "}
+            What changed · 变更内容{" "}
             <span className="count">
               +{totalAdds} / −{totalDels} across {packet.changedFiles.length}{" "}
-              files
+              files · 涉及 {packet.changedFiles.length} 个文件
             </span>
           </h3>
           {isStreaming ? (
             <p className="packet-streaming-hint">
-              Owner bot still working… acceptance criteria can update mid-view.
+              <Bilingual
+                en="Owner bot still working… acceptance criteria can update mid-view."
+                zh="负责机器人仍在工作中… 验收标准可能在查看过程中动态更新。"
+                layout="stacked"
+              />
             </p>
           ) : null}
           <div className="packet-report">
-            <h4>Highlights</h4>
+            <h4>Highlights · 亮点摘要</h4>
             <p className="highlights-prose">
-              {packet.sessionReport.highlights}
+              {displayHighlights}
             </p>
           </div>
           {packet.sessionReport.topWins.length > 0 ? (
             <div className="packet-report">
-              <h4>What I tried that worked (kept)</h4>
+              <h4>What I tried that worked (kept) · 尝试有效的方法 (已保留)</h4>
               <ul>
                 {packet.sessionReport.topWins.map((win) => (
                   <li key={`${win.delta}-${win.description}`}>
@@ -170,7 +239,7 @@ export function DecisionPacketView({
           ) : null}
           {packet.sessionReport.deadEnds.length > 0 ? (
             <div className="packet-report">
-              <h4>What I tried that didn't work (dead ends)</h4>
+              <h4>What I tried that didn't work (dead ends) · 尝试但未奏效的死胡同</h4>
               <ul>
                 {packet.sessionReport.deadEnds.map((d) => (
                   <li key={`${d.tried}-${d.reason}`} className="dead-end">
@@ -188,7 +257,7 @@ export function DecisionPacketView({
                 <span className="stat-neg">−{f.deletions}</span>
                 <span className="file-path">{f.path}</span>
                 {f.status === "added" ? (
-                  <span className="file-tag">new</span>
+                  <span className="file-tag">new · 新增</span>
                 ) : (
                   <span />
                 )}
@@ -199,10 +268,10 @@ export function DecisionPacketView({
 
         <section className="packet-section" aria-label="Reviewer grades">
           <h3>
-            Reviewer grades{" "}
+            Reviewer grades · 审查评分{" "}
             <span className="count">
-              {gradedCount} of {grades.length} graded
-              {skippedCount > 0 ? ` · ${skippedCount} timed out` : ""}
+              {gradedCount} of {grades.length} graded · 已完成 {gradedCount}/{grades.length} 项
+              {skippedCount > 0 ? ` · ${skippedCount} timed out · ${skippedCount} 项超时` : ""}
             </span>
           </h3>
           {packet.banners
@@ -262,11 +331,11 @@ function PacketLeftColumn({ packet }: { packet: DecisionPacket }) {
   return (
     <nav className="packet-left" aria-label="Task context">
       <div className="crumb">
-        <a href="#/inbox">inbox</a> / task
+        <a href="#/inbox">inbox · 收件箱</a> / task · 任务
       </div>
       {packet.subIssues.length > 0 ? (
         <>
-          <h2>Sub-tasks</h2>
+          <h2>Sub-tasks · 子任务</h2>
           <div className="packet-deps">
             {packet.subIssues.map((sub) => (
               <div key={sub.taskId} className="packet-dep">
@@ -287,19 +356,19 @@ function PacketLeftColumn({ packet }: { packet: DecisionPacket }) {
       ) : null}
       {packet.dependencies.blockedOn.length > 0 ? (
         <>
-          <h2>Blocked on</h2>
+          <h2>Blocked on · 阻塞于</h2>
           <div className="packet-deps">
             {packet.dependencies.blockedOn.map((id) => (
               <div key={id} className="packet-dep blocked">
                 <span className="dot" aria-hidden="true" />
-                {id} · waiting approval
+                {id} · waiting approval · 等待审批
               </div>
             ))}
           </div>
         </>
       ) : null}
       <h2>
-        Reviewer set{" "}
+        Reviewer set · 审查组{" "}
         {allReviewersGraded ? <span aria-hidden="true">·</span> : null}
       </h2>
       <div className="packet-deps">
@@ -311,7 +380,7 @@ function PacketLeftColumn({ packet }: { packet: DecisionPacket }) {
             <span className="dot" aria-hidden="true" />
             <span style={{ flex: 1 }}>
               {r.slug}
-              {r.isHuman ? " (you)" : ""}
+              {r.isHuman ? " (you · 你)" : ""}
             </span>
             <span
               style={{
@@ -319,7 +388,7 @@ function PacketLeftColumn({ packet }: { packet: DecisionPacket }) {
                 fontSize: 12,
               }}
             >
-              {r.hasGraded ? "graded" : "—"}
+              {r.hasGraded ? "graded · 已评分" : "—"}
             </span>
           </div>
         ))}
@@ -334,8 +403,11 @@ function ReviewerTimeoutBanner({ banner }: { banner: PacketBanner }) {
     <div className="packet-banner warning" role="status">
       <span className="banner-dot" aria-hidden="true" />
       <div>
-        Reviewer <code>{banner.reviewerSlug}</code> timed out at {elapsed}.{" "}
-        {banner.message}
+        <Bilingual
+          en={`Reviewer ${banner.reviewerSlug} timed out at ${elapsed}. ${banner.message}`}
+          zh={`审查员 ${banner.reviewerSlug} 在 ${elapsed} 超时。系统已填入跳过占位符，您仍可合并或重新发起审查。`}
+          layout="stacked"
+        />
       </div>
     </div>
   );
@@ -350,9 +422,11 @@ function ReviewerTimeoutForcedBanner() {
     <div className="packet-banner warning" role="status">
       <span className="banner-dot" aria-hidden="true" />
       <div>
-        At least one reviewer hit the convergence timeout. The Decision Packet
-        is presented with their grade marked as skipped so a human can still
-        resolve the task.
+        <Bilingual
+          en="At least one reviewer hit the convergence timeout. The Decision Packet is presented with their grade marked as skipped so a human can still resolve the task."
+          zh="至少有一位审查员达到收敛超时。决策数据包将其评分标记为跳过，以便人工仍可处理并解决此任务。"
+          layout="stacked"
+        />
       </div>
     </div>
   );
@@ -363,9 +437,11 @@ function PersistenceBanner() {
     <div className="packet-banner error" role="alert">
       <span className="banner-dot" aria-hidden="true" />
       <div>
-        Persistence error on this task — your changes are still in memory but
-        not saved to disk yet. Fix the underlying issue (disk space,
-        permissions) and the next transition will retry.
+        <Bilingual
+          en="Persistence error on this task — your changes are still in memory but not saved to disk yet. Fix the underlying issue (disk space, permissions) and the next transition will retry."
+          zh="此任务出现持久化错误 — 您的修改仍保存在内存中，但尚未写入磁盘。请修复底层问题（磁盘空间或权限不足），下一个状态转换将自动重试。"
+          layout="stacked"
+        />
       </div>
     </div>
   );
@@ -376,8 +452,11 @@ function RegeneratedBanner() {
     <div className="packet-banner warning" role="status">
       <span className="banner-dot" aria-hidden="true" />
       <div>
-        Packet regenerated from in-memory state. Some fields may be incomplete —
-        verify before merging.
+        <Bilingual
+          en="Packet regenerated from in-memory state. Some fields may be incomplete — verify before merging."
+          zh="数据包已从内存状态重新生成。部分字段可能不完整 — 请在合并前核验。"
+          layout="stacked"
+        />
       </div>
     </div>
   );
@@ -426,15 +505,18 @@ function DiscussionSection({ feedback, channel }: DiscussionSectionProps) {
       data-testid="packet-discussion"
     >
       <h3>
-        Discussion{" "}
+        Discussion · 讨论区{" "}
         <span className="count">
-          {feedback.length} {feedback.length === 1 ? "comment" : "comments"}
+          {feedback.length} {feedback.length === 1 ? "comment" : "comments"} · {feedback.length} 条评论
         </span>
       </h3>
       {feedback.length === 0 ? (
         <p className="packet-discussion-empty">
-          No review notes yet. Approvals, requested changes, and reviewer notes
-          appear here.
+          <Bilingual
+            en="No review notes yet. Approvals, requested changes, and reviewer notes appear here."
+            zh="暂无审查备注。批准、修改请求与审查员意见将显示在此处。"
+            layout="stacked"
+          />
           {/* No channel doorway from a task: the office is one room, and the
               discussion lives in the channel the task was created from, which
               the sidebar lists directly. */}

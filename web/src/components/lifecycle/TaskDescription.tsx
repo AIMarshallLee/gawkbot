@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { useInlineArtifacts } from "../../hooks/useInlineArtifacts";
@@ -9,6 +9,7 @@ import {
 import { keyedByOccurrence } from "../../lib/reactKeys";
 import { stripStandaloneRichArtifactReferenceLines } from "../../lib/richArtifactReferences";
 import RichArtifactEmbed from "../rich-artifacts/RichArtifactEmbed";
+import { TranslateButton } from "../ui/TranslateButton";
 
 // ── Linear-style description ──────────────────────────────────────────
 
@@ -17,25 +18,11 @@ interface TaskDescriptionProps {
   isDrafting: boolean;
 }
 
-/**
- * TaskDescription renders the task's description body. When the bot has
- * dropped a `visual-artifact:<id>` marker into the description (the same
- * way wiki articles and notebook entries reference rich HTML companions),
- * the marker is stripped from the markdown body and the underlying
- * RichArtifactEmbed renders inline ABOVE the remaining prose, in
- * document order.
- *
- * Mirrors the wiki + notebook surfaces' embed pattern via the shared
- * useInlineArtifacts hook so the Making-Software / technical-manual
- * aesthetic looks identical wherever the bot emitted HTML output.
- * A 404 (or any fetch failure) for a referenced artifact degrades to
- * nothing visible — the stripped marker keeps the raw `visual-artifact:`
- * text out of the body either way.
- */
 export function TaskDescription({
   description,
   isDrafting,
 }: TaskDescriptionProps) {
+  const [translatedBody, setTranslatedBody] = useState<string | null>(null);
   const body = description.trim();
   const inlineArtifacts = useInlineArtifacts(body || null);
   const renderedBody = useMemo(
@@ -53,15 +40,25 @@ export function TaskDescription({
       >
         <p className="issue-doc-description-empty-line">
           {isDrafting
-            ? "No description yet. Add one in chat — the scoping conversation firms it up."
-            : "No description."}
+            ? "暂无任务描述 (No description yet. Add one in chat — the scoping conversation firms it up.)"
+            : "暂无描述 · No description."}
         </p>
       </section>
     );
   }
 
+  const activeMarkdown = translatedBody ?? renderedBody;
+
   return (
     <section className="issue-doc-description" aria-label="Description">
+      {hasMarkdown ? (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+          <TranslateButton
+            originalText={renderedBody}
+            onToggle={(isZh, text) => setTranslatedBody(isZh ? text : null)}
+          />
+        </div>
+      ) : null}
       <div
         className="issue-doc-description-body"
         data-testid="issue-doc-description-body"
@@ -80,7 +77,7 @@ export function TaskDescription({
             remarkPlugins={messageRemarkPlugins}
             components={messageMarkdownComponents}
           >
-            {renderedBody}
+            {activeMarkdown}
           </ReactMarkdown>
         ) : null}
       </div>

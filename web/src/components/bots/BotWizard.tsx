@@ -19,6 +19,7 @@ import {
   isCatalogModel,
   modelOptionsForKind,
 } from "../../lib/modelCatalog";
+import { Bilingual } from "../ui/Bilingual";
 
 // "inherit" is the wizard-only sentinel that maps to an absent ProviderBinding
 // in the POST body (the broker then falls back to the install-wide default at
@@ -57,6 +58,9 @@ const PROVIDER_LABELS: Record<LLMRuntimeKind, string> = {
   "claude-code": "Claude Code",
   codex: "Codex",
   opencode: "Opencode",
+  antigravity: "Antigravity · Google 会员",
+  "antigravity-2": "Antigravity 备用 · Google 会员 2号",
+  custom: "Custom API · 自定义模型",
   "mlx-lm": "MLX-LM",
   ollama: "Ollama",
   exo: "Exo",
@@ -341,30 +345,32 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
     >
       <div className="bot-wizard-modal card" {...AGENT_WIZARD_DIALOG_PROPS}>
         <div className="bot-wizard-title" id="bot-wizard-title">
-          Create bot
+          <Bilingual layout="inline" en="Create bot" zh="创建机器人" />
         </div>
 
         {/* Mode toggle */}
         <div className="channel-wizard-tabs" style={{ marginBottom: 16 }}>
           <button
             type="button"
+            aria-label="Describe"
             className={`channel-wizard-tab${mode === "describe" ? " active" : ""}`}
             onClick={() => {
               setMode("describe");
               setError(null);
             }}
           >
-            Describe
+            <Bilingual layout="inline" en="Describe" zh="描述创建" />
           </button>
           <button
             type="button"
+            aria-label="Manual"
             className={`channel-wizard-tab${mode === "manual" ? " active" : ""}`}
             onClick={() => {
               setMode("manual");
               setError(null);
             }}
           >
-            Manual
+            <Bilingual layout="inline" en="Manual" zh="手动配置" />
           </button>
         </div>
 
@@ -372,12 +378,12 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
           <div className="bot-wizard-form">
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-prompt">
-                Describe the bot you want
+                <Bilingual layout="inline" en="Describe the bot you want" zh="描述你需要的机器人" />
               </label>
               <textarea
                 id="bot-prompt"
                 className="input"
-                placeholder='e.g. "A DevOps engineer who manages CI/CD and infrastructure"'
+                placeholder='e.g. "A DevOps engineer who manages CI/CD and infrastructure" · 例如：“负责管理 CI/CD 与基础设施的运维工程师”'
                 value={prompt}
                 onChange={(e) => {
                   setPrompt(e.target.value);
@@ -399,8 +405,11 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
                   display: "block",
                 }}
               >
-                AI will draft a slug, name, role, expertise, and personality.
-                You can edit before creating.
+                <Bilingual
+                  layout="stacked"
+                  en="AI will draft a slug, name, role, expertise, and personality. You can edit before creating."
+                  zh="AI 将自动起草标识、名称、职责、专长和人设。创建前你均可再次调整。"
+                />
               </span>
             </div>
 
@@ -413,7 +422,7 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
                 onClick={handleCancel}
                 disabled={generating}
               >
-                Cancel
+                <Bilingual layout="inline" en="Cancel" zh="取消" />
               </button>
               <button
                 type="button"
@@ -421,7 +430,7 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
                 onClick={handleGenerate}
                 disabled={generating || !prompt.trim()}
               >
-                {generating ? "Generating..." : "Generate"}
+                {generating ? "Generating… · 正在生成…" : <Bilingual layout="inline" en="Generate" zh="AI 生成" />}
               </button>
             </div>
           </div>
@@ -430,13 +439,14 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
             {/* Name */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-name">
-                Name
+                <Bilingual layout="inline" en="Name" zh="名称" />
               </label>
               <input
                 id="bot-name"
+                aria-label="Name"
                 className="input"
                 type="text"
-                placeholder="e.g. Sales Rep"
+                placeholder="e.g. Sales Rep · 例如：销售代表"
                 value={form.name}
                 onChange={(e) => updateField("name", e.target.value)}
               />
@@ -445,13 +455,14 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
             {/* Slug */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-slug">
-                Slug
+                <Bilingual layout="inline" en="Slug" zh="唯一标识 (Slug)" />
               </label>
               <input
                 id="bot-slug"
+                aria-label="Slug"
                 className="input"
                 type="text"
-                placeholder="auto-generated-from-name"
+                placeholder="auto-generated-from-name · 随名称自动生成"
                 value={form.slug}
                 onChange={(e) => {
                   setSlugEdited(true);
@@ -463,13 +474,14 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
             {/* Role */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-role">
-                Role
+                <Bilingual layout="inline" en="Role" zh="职责角色" />
               </label>
               <input
                 id="bot-role"
+                aria-label="Role"
                 className="input"
                 type="text"
-                placeholder="e.g. SDR, Engineer, Support"
+                placeholder="e.g. SDR, Engineer, Support · 例如：开发工程师、客服"
                 value={form.role}
                 onChange={(e) => updateField("role", e.target.value)}
               />
@@ -478,17 +490,18 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
             {/* Soul / personality — seeds SOUL.md */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-soul">
-                Soul{" "}
+                <Bilingual layout="inline" en="Soul" zh="人设性格 (Soul)" />{" "}
                 <span
                   style={{ fontWeight: 400, color: "var(--text-tertiary)" }}
                 >
-                  (personality, voice, boundaries — optional)
+                  (personality, voice, boundaries — optional · 性格、语气与行为边界 — 可选)
                 </span>
               </label>
               <textarea
                 id="bot-soul"
+                aria-label="Soul"
                 className="input"
-                placeholder="e.g. Relentless about pipeline, allergic to vanity metrics. Direct, never fluffy."
+                placeholder="e.g. Relentless about pipeline, allergic to vanity metrics. Direct, never fluffy. · 例如：专注实际产出，拒绝华而不实。直接、严谨。"
                 value={form.soul}
                 onChange={(e) => updateField("soul", e.target.value)}
                 rows={3}
@@ -500,22 +513,25 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
                 }}
               />
               <span className="op-hint">
-                Seeds this agent's SOUL.md — the persona loaded into its system
-                prompt. You can refine it (and the other instruction files)
-                anytime from the agent's profile.
+                <Bilingual
+                  layout="stacked"
+                  en="Seeds this agent's SOUL.md — the persona loaded into its system prompt. You can refine it (and the other instruction files) anytime from the agent's profile."
+                  zh="预置此机器人的 SOUL.md — 作为系统提示词加载的人设核心。创建后可随时在其专属档案中调整。"
+                />
               </span>
             </div>
 
             {/* Emoji */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-emoji">
-                Emoji
+                <Bilingual layout="inline" en="Emoji" zh="图标 Emoji" />
               </label>
               <input
                 id="bot-emoji"
+                aria-label="Emoji"
                 className="input"
                 type="text"
-                placeholder="e.g. robot face"
+                placeholder="🤖"
                 value={form.emoji}
                 onChange={(e) => updateField("emoji", e.target.value)}
                 maxLength={4}
@@ -526,10 +542,11 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
             {/* Provider + Model */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-provider">
-                Runtime
+                <Bilingual layout="inline" en="Runtime" zh="运行时引擎" />
               </label>
               <select
                 id="bot-provider"
+                aria-label="Runtime"
                 value={form.provider}
                 onChange={(e) =>
                   updateField("provider", e.target.value as ProviderChoice)
@@ -537,7 +554,7 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
               >
                 <option value="inherit">
                   Inherit default (
-                  {configQuery.data?.llm_provider ?? "claude-code"})
+                  {configQuery.data?.llm_provider ?? "claude-code"}) · 继承默认
                 </option>
                 {llmKinds.map((kind) => (
                   <option key={kind} value={kind}>
@@ -547,25 +564,29 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
               </select>
               {form.provider === "inherit" ? (
                 <span className="op-hint">
-                  Inherits the install default. Pick a specific runtime to pin
-                  this agent — you can also change it later from the agent's
-                  profile.
+                  <Bilingual
+                    layout="stacked"
+                    en="Inherits the install default. Pick a specific runtime to pin this agent — you can also change it later from the agent's profile."
+                    zh="继承全局默认配置。选择特定运行时可锁定该机器人 — 稍后也可随时在其档案中更改。"
+                  />
                 </span>
               ) : (
                 <span className="op-hint">
-                  This bot will run on{" "}
-                  {PROVIDER_LABELS[form.provider] ?? form.provider} on every
-                  turn. Change anytime from the agent's profile.
+                  <Bilingual
+                    layout="stacked"
+                    en={`This bot will run on ${PROVIDER_LABELS[form.provider] ?? form.provider} on every turn. Change anytime from the agent's profile.`}
+                    zh={`该机器人每轮执行都将使用 ${PROVIDER_LABELS[form.provider] ?? form.provider}。可随时在档案中更改。`}
+                  />
                 </span>
               )}
             </div>
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-model">
-                Model{" "}
+                <Bilingual layout="inline" en="Model" zh="模型" />{" "}
                 <span
                   style={{ fontWeight: 400, color: "var(--text-tertiary)" }}
                 >
-                  (optional)
+                  (optional · 可选)
                 </span>
               </label>
               <WizardModelPicker
@@ -576,27 +597,30 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
                 localStatuses={localStatuses}
               />
               <span className="op-hint">
-                Pick from common models for the chosen runtime, or use "Custom…"
-                to type any model id. Leave on "Use runtime default" to let the
-                runtime decide.
+                <Bilingual
+                  layout="stacked"
+                  en="Pick from common models for the chosen runtime, or use &quot;Custom…&quot; to type any model id. Leave on &quot;Use runtime default&quot; to let the runtime decide."
+                  zh="为所选运行时选择常用模型，或使用“自定义…”输入任意模型标识。留空则使用运行时默认配置。"
+                />
               </span>
             </div>
 
             {/* Expertise */}
             <div className="bot-wizard-field">
               <label className="label" htmlFor="bot-expertise">
-                Expertise{" "}
+                <Bilingual layout="inline" en="Expertise" zh="专长领域" />{" "}
                 <span
                   style={{ fontWeight: 400, color: "var(--text-tertiary)" }}
                 >
-                  (comma-separated)
+                  (comma-separated · 逗号分隔)
                 </span>
               </label>
               <input
                 id="bot-expertise"
+                aria-label="Expertise"
                 className="input"
                 type="text"
-                placeholder="e.g. outreach, cold email, pipeline"
+                placeholder="e.g. outreach, cold email, pipeline · 例如：后端开发, 性能调优"
                 value={form.expertise}
                 onChange={(e) => updateField("expertise", e.target.value)}
               />
@@ -621,14 +645,15 @@ export function BotWizard({ open, onClose, onCreated }: BotWizardProps) {
                 onClick={handleCancel}
                 disabled={submitting}
               >
-                Cancel
+                <Bilingual layout="inline" en="Cancel" zh="取消" />
               </button>
               <button
                 type="submit"
+                aria-label="Create"
                 className="btn btn-primary btn-sm"
                 disabled={!canSubmit || submitting}
               >
-                {submitting ? "Creating..." : "Create"}
+                {submitting ? "Creating… · 正在创建…" : <Bilingual layout="inline" en="Create" zh="创建机器人" />}
               </button>
             </div>
           </form>

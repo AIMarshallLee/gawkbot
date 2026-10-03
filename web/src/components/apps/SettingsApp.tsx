@@ -148,6 +148,35 @@ function GeneralSection({ cfg, save }: SectionProps) {
     setConnectedProviders((prev) => (sameProviders(prev, next) ? prev : next));
   }, []);
 
+  const customEndpoint = cfg.provider_endpoints?.custom;
+  const [customBaseURL, setCustomBaseURL] = useState(
+    customEndpoint?.base_url ?? "",
+  );
+  const [customModel, setCustomModel] = useState(customEndpoint?.model ?? "");
+  const [customAPIKey, setCustomAPIKey] = useState(
+    customEndpoint?.api_key ?? "",
+  );
+  const [showAPIKey, setShowAPIKey] = useState(false);
+
+  const actionBtnStyle: React.CSSProperties = {
+    padding: "4px 10px",
+    fontSize: 11,
+    borderRadius: "var(--radius-sm)",
+    border: "1px solid var(--border)",
+    background: "var(--bg-card)",
+    color: "var(--text)",
+    cursor: "pointer",
+  };
+
+  const applyPreset = (name: string, url: string, modelName: string) => {
+    setCustomBaseURL(url);
+    setCustomModel(modelName);
+    if (!providers.includes("custom")) {
+      setProviders([...providers, "custom"]);
+    }
+    showNotice(`已填充 ${name} 预设并勾选 Custom API，请填入 API Key`, "info");
+  };
+
   const onSave = async () => {
     const providerPriority =
       connectedProviders ?? normalizeProviderList(providers);
@@ -158,6 +187,14 @@ function GeneralSection({ cfg, save }: SectionProps) {
       blueprint,
       email,
       team_lead_slug: teamLead,
+      provider_endpoints: {
+        ...(cfg.provider_endpoints ?? {}),
+        custom: {
+          base_url: customBaseURL.trim(),
+          model: customModel.trim(),
+          api_key: customAPIKey.trim(),
+        },
+      },
     };
     if (maxConcurrent)
       patch.max_concurrent_agents = parseInt(maxConcurrent, 10);
@@ -167,9 +204,9 @@ function GeneralSection({ cfg, save }: SectionProps) {
 
   return (
     <div>
-      <h2 style={styles.sectionTitle}>General</h2>
+      <h2 style={styles.sectionTitle}>General · 常规</h2>
       <p style={styles.sectionDesc}>
-        Core runtime settings. These map to CLI flags and config file entries.
+        Core runtime settings. These map to CLI flags and config file entries. · 核心运行时设置，对应 CLI 参数和配置文件。
       </p>
 
       <RuntimeProviderChecklist
@@ -178,7 +215,113 @@ function GeneralSection({ cfg, save }: SectionProps) {
         onSelectedProvidersChange={setProviders}
         onConnectedProvidersChange={updateConnectedProviders}
       />
-      <div style={{ ...styles.groupTitle, marginTop: 24 }}>Bots</div>
+
+      <div style={{ ...styles.groupTitle, marginTop: 24 }}>
+        Custom API Endpoint · 自定义模型接口 (DeepSeek / 通义千问 / Kimi / OpenAI 兼容)
+      </div>
+      <p
+        style={{
+          fontSize: 12,
+          color: "var(--text-tertiary)",
+          margin: "0 0 12px 0",
+          lineHeight: 1.5,
+        }}
+      >
+        配置任何 OpenAI 兼容模型端点。配置并勾选上方 <strong>Custom API</strong> 后，所有任务与机器人均可使用该模型。
+      </p>
+      <div
+        style={{
+          background: "var(--bg-card)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-sm)",
+          padding: 16,
+          marginBottom: 16,
+        }}
+      >
+        <div style={{ marginBottom: 12 }}>
+          <span style={{ fontSize: 12, color: "var(--text-secondary)", marginRight: 8 }}>
+            快捷预设:
+          </span>
+          <button
+            type="button"
+            style={{ ...actionBtnStyle, marginRight: 6 }}
+            onClick={() =>
+              applyPreset("DeepSeek", "https://api.deepseek.com/v1", "deepseek-chat")
+            }
+          >
+            DeepSeek 官方
+          </button>
+          <button
+            type="button"
+            style={{ ...actionBtnStyle, marginRight: 6 }}
+            onClick={() =>
+              applyPreset(
+                "阿里云百炼 (通义千问)",
+                "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                "qwen-plus",
+              )
+            }
+          >
+            通义千问 Qwen
+          </button>
+          <button
+            type="button"
+            style={{ ...actionBtnStyle, marginRight: 6 }}
+            onClick={() =>
+              applyPreset("Moonshot (Kimi)", "https://api.moonshot.cn/v1", "moonshot-v1-8k")
+            }
+          >
+            Kimi (Moonshot)
+          </button>
+          <button
+            type="button"
+            style={actionBtnStyle}
+            onClick={() =>
+              applyPreset("本地 LM Studio", "http://localhost:1234/v1", "local-model")
+            }
+          >
+            本地 LM Studio
+          </button>
+        </div>
+
+        <div style={{ display: "grid", gap: 12 }}>
+          <Field label="Base URL · 接口端点" hint="如 https://api.deepseek.com/v1">
+            <input
+              style={styles.input}
+              placeholder="https://api.deepseek.com/v1"
+              value={customBaseURL}
+              onChange={(e) => setCustomBaseURL(e.target.value)}
+            />
+          </Field>
+          <Field label="API Key · 访问秘钥" hint="Bearer Token，如 sk-...">
+            <div style={{ display: "flex", gap: 8 }}>
+              <input
+                style={{ ...styles.input, flex: 1 }}
+                type={showAPIKey ? "text" : "password"}
+                placeholder="sk-..."
+                value={customAPIKey}
+                onChange={(e) => setCustomAPIKey(e.target.value)}
+              />
+              <button
+                type="button"
+                style={{ ...actionBtnStyle, padding: "0 12px" }}
+                onClick={() => setShowAPIKey(!showAPIKey)}
+              >
+                {showAPIKey ? "隐藏" : "显示"}
+              </button>
+            </div>
+          </Field>
+          <Field label="Model Name · 模型名称" hint="如 deepseek-chat, qwen-plus, moonshot-v1-8k">
+            <input
+              style={styles.input}
+              placeholder="deepseek-chat"
+              value={customModel}
+              onChange={(e) => setCustomModel(e.target.value)}
+            />
+          </Field>
+        </div>
+      </div>
+      <div style={{ ...styles.groupTitle, marginTop: 24 }}>Bots · 机器人</div>
       <Field label="Team Lead" hint="Bot that leads operations">
         <TeamLeadPicker value={teamLead} onChange={setTeamLead} />
       </Field>

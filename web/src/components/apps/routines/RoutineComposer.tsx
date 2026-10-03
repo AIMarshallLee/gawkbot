@@ -130,8 +130,8 @@ export function RoutineComposer() {
           borderBottom: "1px solid var(--border)",
         }}
       >
-        <span style={eyebrowStyle}>New scheduled task</span>
-        <h1 style={titleStyle}>Create a scheduled task</h1>
+        <span style={eyebrowStyle}>New scheduled task · 新建定时任务</span>
+        <h1 style={titleStyle}>Create a scheduled task · 创建定时任务</h1>
         <p
           style={{
             margin: 0,
@@ -152,7 +152,7 @@ export function RoutineComposer() {
           gap: "var(--space-5)",
         }}
       >
-        <FormField label="Title" hint="What this scheduled task should do.">
+        <FormField label="Title · 标题" hint="What this scheduled task should do. · 此定时任务要完成什么。">
           <input
             type="text"
             className="input"
@@ -165,10 +165,10 @@ export function RoutineComposer() {
         </FormField>
 
         <FormField
-          label="Slug"
+          label="Slug · 标识"
           hint={
             slug.trim()
-              ? "URL identifier — must be unique within the team."
+              ? "URL identifier — must be unique within the team. · URL 标识，在团队内必须唯一。"
               : `Auto-derived from the title: ${derivedSlug || "(empty)"}`
           }
         >
@@ -184,8 +184,8 @@ export function RoutineComposer() {
         </FormField>
 
         <FormField
-          label="Owner"
-          hint="The bot that runs this scheduled task when it fires."
+          label="Owner · 负责人"
+          hint="The bot that runs this scheduled task when it fires. · 任务触发时运行它的机器人。"
         >
           <OwnerSelect
             value={ownerSlug}
@@ -208,8 +208,8 @@ export function RoutineComposer() {
         </FormField>
 
         <FormField
-          label="Run in"
-          hint="Where the scheduled task posts when it fires. Defaults to the owner's DM."
+          label="Run in · 运行位置"
+          hint="Where the scheduled task posts when it fires. Defaults to the owner's DM. · 触发后发布到哪里，默认负责人私信。"
         >
           <RoutineChannelSelect
             value={channel}
@@ -220,15 +220,15 @@ export function RoutineComposer() {
         </FormField>
 
         <FormField
-          label="Schedule"
-          hint="When this scheduled task should fire."
+          label="Schedule · 计划"
+          hint="When this scheduled task should fire. · 此定时任务何时触发。"
         >
           <ScheduleBuilder value={schedule} onChange={setSchedule} />
         </FormField>
 
         <FormField
-          label="Instructions"
-          hint="What the bot should do on each fire."
+          label="Instructions · 指令"
+          hint="What the bot should do on each fire. · 每次触发时机器人应执行的工作。"
         >
           <textarea
             className="input"
@@ -242,8 +242,8 @@ export function RoutineComposer() {
         </FormField>
 
         <FormField
-          label="State"
-          hint="A scheduled task can be started paused and enabled later."
+          label="State · 状态"
+          hint="A scheduled task can be started paused and enabled later. · 可先以暂停状态创建，之后再启用。"
         >
           <label
             style={{
@@ -308,7 +308,7 @@ export function RoutineComposer() {
             }}
             disabled={mutation.isPending || !label.trim() || !ownerSlug}
           >
-            {mutation.isPending ? "Creating…" : "Create scheduled task"}
+            {mutation.isPending ? "Creating… · 正在创建…" : "Create scheduled task · 创建定时任务"}
           </button>
         </div>
       </form>
@@ -329,7 +329,7 @@ function OwnerSelect({ value, onChange, members, loading }: OwnerSelectProps) {
   if (loading) {
     return (
       <select className="input" disabled={true} value="" onChange={() => {}}>
-        <option value="">Loading bots…</option>
+        <option value="">Loading bots… · 正在加载机器人…</option>
       </select>
     );
   }
@@ -341,7 +341,7 @@ function OwnerSelect({ value, onChange, members, loading }: OwnerSelectProps) {
       data-testid="composer-owner"
       required={true}
     >
-      {members.length === 0 && <option value="">No bots available</option>}
+      {members.length === 0 && <option value="">No bots available · 无可用机器人</option>}
       {members.map((m) => (
         <option key={m.slug} value={m.slug}>
           {ownerLabel(m)}

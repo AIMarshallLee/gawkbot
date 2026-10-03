@@ -407,4 +407,21 @@ export const messageMarkdownComponents: Partial<Components> = {
       <br />
     </span>
   ),
+
+  img: (props: ComponentProps<"img">): ReactElement => {
+    const { src, alt, ...rest } = props as ComponentProps<"img"> & { node?: unknown };
+    return (
+      <img
+        {...rest}
+        src={src}
+        alt={alt || "image"}
+        className="msg-inline-image"
+        loading="lazy"
+        onClick={() => {
+          if (src) window.open(src, "_blank");
+        }}
+      />
+    );
+  },
 };
+

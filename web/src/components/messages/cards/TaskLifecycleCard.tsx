@@ -89,49 +89,49 @@ function presentationFor(
   transition: TaskLifecycleTransition,
   owner: string | undefined,
 ): TransitionPresentation {
-  const tag = owner ? `@${owner}` : "the owner";
+  const tag = owner ? `@${owner}` : "负责人";
   switch (transition) {
     case "started":
       return {
-        eyebrow: `Approved — ${tag} on it`,
+        eyebrow: `已批准启动 — ${tag} 正在执行 · Approved (${tag})`,
         icon: "🚀",
         accent: "go",
       };
     case "in_review":
       return {
-        eyebrow: `Ready for your review — submitted by ${tag}`,
+        eyebrow: `已提交审查，等待您审核 — 由 ${tag} 提交 · Ready for review`,
         icon: "👀",
         accent: "review",
       };
     case "approved":
       return {
-        eyebrow: `Done — ${tag} wrapped it`,
+        eyebrow: `已完成 — ${tag} 已交付 · Done`,
         icon: "✅",
         accent: "done",
       };
     case "rejected":
-      return { eyebrow: "Closed", icon: "🚫", accent: "stop" };
+      return { eyebrow: "已关闭终结 · Closed", icon: "🚫", accent: "stop" };
     case "blocked":
       return {
-        eyebrow: `Blocked — ${tag} can't proceed`,
+        eyebrow: `执行受阻 — ${tag} 无法继续 · Blocked`,
         icon: "⏸",
         accent: "warn",
       };
     case "needs_input":
       return {
-        eyebrow: `Needs your input — ${tag} is waiting`,
+        eyebrow: `等待您确认审核 — ${tag} 正在等待 · Needs input`,
         icon: "❓",
         accent: "warn",
       };
     case "revising":
       return {
-        eyebrow: `Revising — ${tag} is reworking`,
+        eyebrow: `正在重新修改迭代 — ${tag} · Revising`,
         icon: "✏️",
         accent: "review",
       };
     default:
       // "generic" and any future transitions.
-      return { eyebrow: "Task updated", icon: "📋", accent: "neutral" };
+      return { eyebrow: "任务已更新 · Task updated", icon: "📋", accent: "neutral" };
   }
 }
 
@@ -185,7 +185,7 @@ export function TaskLifecycleCard({
       </span>
       {sameTask ? null : (
         <span className="issue-lifecycle-card-cta" aria-hidden="true">
-          Open →
+          查看详情 · Open →
         </span>
       )}
     </>

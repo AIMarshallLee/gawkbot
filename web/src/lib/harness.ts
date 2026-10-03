@@ -4,6 +4,7 @@ export type HarnessKind =
   | "claude-code"
   | "codex"
   | "opencode"
+  | "antigravity"
   | "openclaw"
   | "hermes-agent";
 
@@ -15,6 +16,7 @@ const VALID_KINDS: Record<string, HarnessKind> = {
   claude: "claude-code",
   codex: "codex",
   opencode: "opencode",
+  antigravity: "antigravity",
   openclaw: "openclaw",
   "openclaw-http": "openclaw",
   "hermes-agent": "hermes-agent",
@@ -47,6 +49,8 @@ export function harnessLabel(kind: HarnessKind): string {
       return "Codex";
     case "opencode":
       return "Opencode";
+    case "antigravity":
+      return "Antigravity";
     case "openclaw":
       return "OpenClaw";
     case "hermes-agent":

@@ -128,6 +128,7 @@ type Config struct {
 type ProviderEndpoint struct {
 	BaseURL string `json:"base_url,omitempty"`
 	Model   string `json:"model,omitempty"`
+	APIKey  string `json:"api_key,omitempty"`
 }
 
 // ImageEndpoint is per-image-gen-provider runtime config (api key, base URL,
@@ -1083,6 +1084,21 @@ func ResolveProviderEndpoint(kind, defaultBaseURL, defaultModel string) (string,
 		model = defaultModel
 	}
 	return baseURL, model
+}
+
+// ResolveProviderAPIKey returns the configured API key for an OpenAI-compatible
+// provider kind, checking env var WUPHF_<KIND>_API_KEY first, then
+// Config.ProviderEndpoints[kind].APIKey.
+func ResolveProviderAPIKey(kind string) string {
+	envKind := strings.ToUpper(strings.ReplaceAll(kind, "-", "_"))
+	if v := strings.TrimSpace(Getenv("WUPHF_" + envKind + "_API_KEY")); v != "" {
+		return v
+	}
+	cfg, _ := Load()
+	if ep, ok := cfg.ProviderEndpoints[kind]; ok {
+		return strings.TrimSpace(ep.APIKey)
+	}
+	return ""
 }
 
 // ResolveOpenclawIdentityPath returns where the Ed25519 device identity is

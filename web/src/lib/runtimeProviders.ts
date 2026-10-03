@@ -15,6 +15,26 @@ export interface RuntimeProviderOption {
 
 export const RUNTIME_PROVIDER_OPTIONS: readonly RuntimeProviderOption[] = [
   {
+    id: "antigravity",
+    label: "Antigravity · Google 会员",
+    desc: "Official Google CLI · 使用官方 CLI 登录的会员额度",
+    kind: "cli",
+    binary: "agy",
+  },
+  {
+    id: "antigravity-2",
+    label: "Antigravity 备用 · Google 会员 2号",
+    desc: "Second Google AI Pro account · 第二个 Google AI Pro 账号",
+    kind: "cli",
+    binary: "agy",
+  },
+  {
+    id: "custom",
+    label: "Custom API · 自定义模型 (DeepSeek / OpenAI)",
+    desc: "OpenAI-compatible API · 兼容 DeepSeek/通义/Kimi/本地模型",
+    kind: "local",
+  },
+  {
     id: "claude-code",
     label: "Claude Code",
     desc: "Anthropic Claude via Claude Code CLI",
@@ -106,6 +126,9 @@ export function runtimeProviderIsConnected(
     localStatuses?: Map<string, LocalProviderStatus>;
   },
 ): boolean {
+  if (option.id === "custom") {
+    return true;
+  }
   if (option.kind === "cli") {
     if (!option.binary) return false;
     const prereq = deps.prereqs?.get(option.binary);

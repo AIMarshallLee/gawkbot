@@ -123,8 +123,8 @@ func MigrateToSymmetric() error {
 	if _, err := os.Lstat(oldPath); err == nil {
 		_ = os.Remove(oldPath)
 	}
-	if err := os.Symlink(newPath, oldPath); err != nil && !errors.Is(err, os.ErrExist) {
-		return fmt.Errorf("workspaces: migrate: symlink %s → %s: %w", oldPath, newPath, err)
+	if err := createDirectoryLink(newPath, oldPath); err != nil && !errors.Is(err, os.ErrExist) {
+		return fmt.Errorf("workspaces: migrate: create compatibility link %s → %s: %w", oldPath, newPath, err)
 	}
 
 	// Initialize registry.

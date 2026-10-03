@@ -5,6 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { Image as ImageIcon, Loader2, Mic, MicOff, X } from "lucide-react";
 
 import {
   cancelRequest,
@@ -12,6 +13,8 @@ import {
   type Message,
   postMessage,
 } from "../../api/client";
+import { uploadWikiFile, wikiFileUrl } from "../../api/wiki";
+import { bilingual } from "../../lib/bilingual";
 import { useCommands } from "../../hooks/useCommands";
 import { useOfficeMembers } from "../../hooks/useMembers";
 import { useRequests } from "../../hooks/useRequests";
@@ -180,6 +183,14 @@ export function Composer({ channel }: { channel?: string } = {}) {
   return <ChannelComposer channel={currentChannel} />;
 }
 
+interface ComposerAttachment {
+  id: string;
+  name: string;
+  path: string;
+  url: string;
+  previewUrl: string;
+}
+
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: Existing function length is baselined for a focused follow-up refactor.
 function ChannelComposer({ channel }: { channel: string }) {
   // Non-empty by construction — Composer above is the only caller and guards
@@ -195,6 +206,12 @@ function ChannelComposer({ channel }: { channel: string }) {
   const [caret, setCaret] = useState(0);
   const [acItems, setAcItems] = useState<AutocompleteItem[]>([]);
   const [acIdx, setAcIdx] = useState(0);
+  const [attachments, setAttachments] = useState<ComposerAttachment[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const initialTextRef = useRef<string>("");
   // Guards the cancel-then-send path so a fast double-Enter cannot
   // fire two send POSTs before sendMutation.isPending flips. Cleared
   // in finally() after the inner send mutates (or fails synchronously).
@@ -316,12 +333,91 @@ function ChannelComposer({ channel }: { channel: string }) {
     },
   });
 
+  const uploadAndAttach = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      showNotice(bilingual("Only image files are supported", "仅支持上传图片格式文件"), "error");
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      showNotice(bilingual("Image size must not exceed 25MB", "图片大小不能超过 25MB"), "error");
+      return;
+    }
+    setIsUploading(true);
+    const previewUrl = URL.createObjectURL(file);
+    try {
+      const res = await uploadWikiFile("team/uploads", file);
+      const url = wikiFileUrl(res.path);
+      setAttachments((prev) => [
+        ...prev,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          name: file.name || "image.png",
+          path: res.path,
+          url,
+          previewUrl,
+        },
+      ]);
+      showNotice(bilingual("Image attached", "图片已添加至输入框"), "info");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      showNotice(bilingual(`Failed to upload image: ${msg}`, `图片上传失败: ${msg}`), "error");
+    } finally {
+      setIsUploading(false);
+    }
+  }, []);
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      let hasImage = false;
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf("image") !== -1) {
+          const file = item.getAsFile();
+          if (file) {
+            hasImage = true;
+            const finalFile =
+              file.name && file.name !== "image.png"
+                ? file
+                : new File(
+                    [file],
+                    `screenshot-${new Date().toISOString().replace(/[:.]/g, "-")}.png`,
+                    { type: file.type },
+                  );
+            void uploadAndAttach(finalFile);
+          }
+        }
+      }
+      if (hasImage) {
+        e.preventDefault();
+      }
+    },
+    [uploadAndAttach],
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].type.startsWith("image/")) {
+            void uploadAndAttach(files[i]);
+          }
+        }
+      }
+    },
+    [uploadAndAttach],
+  );
+
   /**
    * Clear the composer, shrink the textarea, and cancel any pending recall.
    * Called after every successful send or consumed command.
    */
   const resetComposer = useCallback(() => {
     setText("");
+    setAttachments([]);
     resetRecall();
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -342,7 +438,26 @@ function ChannelComposer({ channel }: { channel: string }) {
 
   const handleSend = useCallback(() => {
     const trimmed = text.trim();
-    if (!trimmed || sendMutation.isPending || isPreSendPending) return;
+    if (
+      (!trimmed && attachments.length === 0) ||
+      sendMutation.isPending ||
+      isPreSendPending ||
+      isUploading
+    ) {
+      return;
+    }
+
+    let finalContent = trimmed;
+    if (attachments.length > 0) {
+      const imageLines = attachments
+        .map((att) => `![${att.name}](${att.url})\n[图片路径: ${att.path}]`)
+        .join("\n\n");
+      if (finalContent) {
+        finalContent = `${finalContent}\n\n${imageLines}`;
+      } else {
+        finalContent = imageLines;
+      }
+    }
 
     // If a blocking interview is pending, cancel it before sending so the
     // broker doesn't 409 the message. The bot will see the cancellation
@@ -370,8 +485,12 @@ function ChannelComposer({ channel }: { channel: string }) {
         const consumed = handleSlashCommand(trimmed, {
           leadSlug,
           sendAsMessage: (rewritten) => {
+            const contentToSend =
+              attachments.length > 0
+                ? `${rewritten}\n\n${attachments.map((att) => `![${att.name}](${att.url})\n[图片路径: ${att.path}]`).join("\n\n")}`
+                : rewritten;
             sendMutation.mutate({
-              content: rewritten,
+              content: contentToSend,
               tagged: extractTaggedMentions(rewritten, knownSlugs),
             });
           },
@@ -385,10 +504,12 @@ function ChannelComposer({ channel }: { channel: string }) {
         }
       }
 
-      pushHistory(currentChannel, trimmed);
+      if (trimmed) {
+        pushHistory(currentChannel, trimmed);
+      }
       sendMutation.mutate({
-        content: trimmed,
-        tagged: extractTaggedMentions(trimmed, knownSlugs),
+        content: finalContent,
+        tagged: extractTaggedMentions(finalContent, knownSlugs),
       });
       resetComposer();
     };
@@ -401,6 +522,8 @@ function ChannelComposer({ channel }: { channel: string }) {
     }
   }, [
     text,
+    attachments,
+    isUploading,
     sendMutation,
     leadSlug,
     currentChannel,
@@ -411,6 +534,7 @@ function ChannelComposer({ channel }: { channel: string }) {
     queryClient,
     isPreSendPending,
   ]);
+
 
   /**
    * Walk backward through history. On first invocation, snapshot the live
@@ -560,8 +684,131 @@ function ChannelComposer({ channel }: { channel: string }) {
     if (src && dst) dst.scrollTop = src.scrollTop;
   }, []);
 
+  const toggleVoiceInput = useCallback(() => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      showNotice(
+        bilingual(
+          "Your browser does not support Speech Recognition. Please use Chrome, Edge, or a Chromium-based browser.",
+          "当前浏览器暂不支持语音识别，推荐使用 Chrome、Edge 等 Chromium 内核浏览器。",
+        ),
+      );
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {}
+      }
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "zh-CN";
+
+      initialTextRef.current = text;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        let interim = "";
+        let finalized = "";
+        for (let i = 0; i < event.results.length; i++) {
+          const piece = event.results[i][0]?.transcript || "";
+          if (event.results[i].isFinal) {
+            finalized += piece;
+          } else {
+            interim += piece;
+          }
+        }
+        const speech = (finalized + interim).trimStart();
+        if (speech) {
+          const prefix = initialTextRef.current;
+          const connector = prefix && !/[，。？！,!?\s]$/.test(prefix) ? " " : "";
+          const next = prefix ? `${prefix}${connector}${speech}` : speech;
+          setText(next);
+          setCaret(next.length);
+          requestAnimationFrame(() => {
+            handleInput();
+            syncScroll();
+            const el = textareaRef.current;
+            if (el) {
+              el.scrollTop = el.scrollHeight;
+            }
+          });
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn("Speech recognition error:", event?.error);
+        if (event?.error === "not-allowed" || event?.error === "service-not-allowed") {
+          showNotice(
+            bilingual(
+              "Microphone access was denied. Please allow microphone permission in browser settings.",
+              "麦克风权限未开启，请在浏览器地址栏允许麦克风权限后重试。",
+            ),
+          );
+        } else if (event?.error === "network") {
+          showNotice(
+            bilingual(
+              "Speech service network blocked: Current Chromium browser (Tabbit/Chrome) relies on Google Speech API. Please open in Edge browser (supports direct native Chinese speech) or enable proxy.",
+              "语音网络受限：当前浏览器（Tabbit/Chrome内核）依赖 Google 语音服务器。建议：直接使用 Edge 浏览器打开（微软中文语音免代理直连），或开启网络代理后重试。",
+            ),
+          );
+        } else if (event?.error !== "no-speech") {
+          showNotice(bilingual(`Voice recognition: ${event?.error}`, `语音识别提示：${event?.error}`));
+        }
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        recognitionRef.current = null;
+        textareaRef.current?.focus();
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error("Failed to start speech recognition:", err);
+      setIsListening(false);
+      showNotice(
+        bilingual(
+          "Could not start speech recognition.",
+          "未能启动语音识别，请检查麦克风设置。",
+        ),
+      );
+    }
+  }, [isListening, text, handleInput, syncScroll]);
+
+  // Clean up recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {}
+      }
+    };
+  }, []);
+
   return (
-    <div className="composer">
+    <div
+      className="composer"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       <Autocomplete
         value={text}
         caret={caret}
@@ -570,6 +817,33 @@ function ChannelComposer({ channel }: { channel: string }) {
         onPick={pickAutocomplete}
         commands={commands}
       />
+      {attachments.length > 0 && (
+        <div className="composer-attachments">
+          {attachments.map((att) => (
+            <div key={att.id} className="composer-attachment-card">
+              <img
+                src={att.previewUrl || att.url}
+                alt={att.name}
+                className="composer-attachment-thumb"
+              />
+              <span className="composer-attachment-name" title={att.name}>
+                {att.name}
+              </span>
+              <button
+                type="button"
+                className="composer-attachment-remove"
+                onClick={() => {
+                  setAttachments((prev) => prev.filter((a) => a.id !== att.id));
+                }}
+                aria-label={bilingual("Remove image", "移除图片")}
+                title={bilingual("Remove image", "移除图片")}
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="composer-inner">
         <div className="composer-field">
           {/* Mirror overlay: renders the same text as the textarea but with
@@ -587,7 +861,10 @@ function ChannelComposer({ channel }: { channel: string }) {
           <textarea
             ref={textareaRef}
             className="composer-input"
-            placeholder={`Message #${currentChannel}`}
+            placeholder={bilingual(
+              `Message #${currentChannel}`,
+              `发送消息至 #${currentChannel}（支持 Ctrl+V 粘贴截图）`,
+            )}
             value={text}
             onChange={(e) => {
               setText(e.target.value);
@@ -603,15 +880,77 @@ function ChannelComposer({ channel }: { channel: string }) {
             onKeyUp={syncCaret}
             onClick={syncCaret}
             onScroll={syncScroll}
+            onPaste={handlePaste}
             rows={1}
           />
         </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const files = e.target.files;
+            if (files) {
+              for (let i = 0; i < files.length; i++) {
+                void uploadAndAttach(files[i]);
+              }
+            }
+            e.target.value = "";
+          }}
+        />
+        {isListening && (
+          <div className="composer-voice-indicator" aria-live="polite">
+            <span className="voice-wave" />
+            <span>{bilingual("Listening... Click mic to stop", "正在倾听中... 点击麦克风停止")}</span>
+          </div>
+        )}
+        <button
+          type="button"
+          className={`composer-voice-btn${isListening ? " recording" : ""}`}
+          onClick={toggleVoiceInput}
+          aria-label={
+            isListening
+              ? bilingual("Stop voice input", "停止语音输入")
+              : bilingual("Voice input", "语音输入（支持中英文）")
+          }
+          title={
+            isListening
+              ? bilingual("Listening... Click to stop", "正在倾听录音中... 点击停止")
+              : bilingual("Voice input (Chinese / English)", "语音输入（支持中英文）")
+          }
+        >
+          {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+        </button>
+        <button
+          type="button"
+          className="composer-upload-btn"
+          disabled={isUploading}
+          onClick={() => fileInputRef.current?.click()}
+          aria-label={bilingual("Upload image", "上传图片")}
+          title={bilingual(
+            "Upload image (or paste screenshot with Ctrl+V)",
+            "上传图片（或直接按 Ctrl+V 粘贴截图）",
+          )}
+        >
+          {isUploading ? (
+            <Loader2 className="composer-spinner" size={16} />
+          ) : (
+            <ImageIcon size={16} />
+          )}
+        </button>
         <button
           type="button"
           className="composer-send"
-          disabled={!text.trim() || sendMutation.isPending || isPreSendPending}
+          disabled={
+            (!text.trim() && attachments.length === 0) ||
+            sendMutation.isPending ||
+            isPreSendPending ||
+            isUploading
+          }
           onClick={handleSend}
-          aria-label="Send message"
+          aria-label={bilingual("Send message", "发送消息")}
         >
           <svg
             aria-hidden="true"
@@ -632,6 +971,7 @@ function ChannelComposer({ channel }: { channel: string }) {
       </div>
     </div>
   );
+
 }
 
 // Re-export helpers for testing.

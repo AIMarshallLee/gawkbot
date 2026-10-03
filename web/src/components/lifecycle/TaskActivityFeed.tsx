@@ -21,6 +21,7 @@ import {
   humanizeTurnOutcome,
 } from "../../lib/humanizeActivity";
 import { router } from "../../lib/router";
+import { Bilingual } from "../ui/Bilingual";
 
 interface TaskActivityFeedProps {
   taskId: string;
@@ -67,7 +68,9 @@ export function TaskActivityFeed({ taskId }: TaskActivityFeedProps) {
   if (isLoading) {
     return (
       <div className="issue-activity-feed">
-        <p className="issue-activity-feed-empty">Loading activity…</p>
+        <p className="issue-activity-feed-empty">
+          <Bilingual layout="inline" en="Loading activity…" zh="正在加载活动记录…" />
+        </p>
       </div>
     );
   }
@@ -75,13 +78,14 @@ export function TaskActivityFeed({ taskId }: TaskActivityFeedProps) {
     return (
       <div className="issue-activity-feed">
         <p className="issue-activity-feed-empty issue-activity-feed-empty--error">
-          Could not load activity.
+          <Bilingual layout="inline" en="Could not load activity." zh="无法加载活动记录。" />
           <button
             type="button"
             className="issue-activity-feed-retry"
             onClick={() => void refetch()}
           >
-            <Refresh width={12} height={12} aria-hidden="true" /> Retry
+            <Refresh width={12} height={12} aria-hidden="true" />{" "}
+            <Bilingual layout="inline" en="Retry" zh="重试" />
           </button>
         </p>
       </div>
@@ -91,8 +95,11 @@ export function TaskActivityFeed({ taskId }: TaskActivityFeedProps) {
     return (
       <div className="issue-activity-feed">
         <p className="issue-activity-feed-empty">
-          No activity yet. Events appear here as the issue moves through its
-          lifecycle.
+          <Bilingual
+            layout="stacked"
+            en="No activity yet. Events appear here as the issue moves through its lifecycle."
+            zh="暂无活动记录。随着任务状态流转，记录将显示在此处。"
+          />
         </p>
       </div>
     );
@@ -223,7 +230,13 @@ function RequestResolution({
     return (
       <div className="issue-activity-feed-resolution issue-activity-feed-resolution--answered">
         <CheckCircle width={12} height={12} aria-hidden="true" />
-        <span>Answered: {answer || "—"}</span>
+        <span>
+          <Bilingual
+            layout="inline"
+            en={`Answered: ${answer || "—"}`}
+            zh={`已回答: ${answer || "—"}`}
+          />
+        </span>
       </div>
     );
   }
@@ -231,7 +244,9 @@ function RequestResolution({
     return (
       <div className="issue-activity-feed-resolution issue-activity-feed-resolution--canceled">
         <Xmark width={12} height={12} aria-hidden="true" />
-        <span>Canceled</span>
+        <span>
+          <Bilingual layout="inline" en="Canceled" zh="已取消" />
+        </span>
       </div>
     );
   }
@@ -239,7 +254,13 @@ function RequestResolution({
   return (
     <div className="issue-activity-feed-resolution issue-activity-feed-resolution--open">
       <HelpCircle width={12} height={12} aria-hidden="true" />
-      <span>Open — answer in Tasks →</span>
+      <span>
+        <Bilingual
+          layout="inline"
+          en="Open — answer in Tasks →"
+          zh="待处理 — 前往任务看板回答 →"
+        />
+      </span>
     </div>
   );
 }
@@ -265,20 +286,20 @@ function iconForKind(kind: TaskActivityEventKind) {
 function verbForEvent(event: TaskActivityEvent): string {
   switch (event.kind) {
     case "lifecycle":
-      return "moved state";
+      return "moved state · 变更了状态";
     case "comment":
-      return "commented";
+      return "commented · 发表了评论";
     case "request":
-      if (event.request?.status === "answered") return "request answered";
-      if (event.request?.status === "canceled") return "request canceled";
-      return "asked";
+      if (event.request?.status === "answered") return "request answered · 请求已回复";
+      if (event.request?.status === "canceled") return "request canceled · 请求已取消";
+      return "asked · 提问";
     case "sub_issue":
-      return "added a sub-task";
+      return "added a sub-task · 添加了子任务";
     case "turn":
-      return "ran a turn";
+      return "ran a turn · 执行了一轮";
     default:
       // "action" and any future kinds.
-      return event.summary || "took action";
+      return event.summary || "took action · 执行了操作";
   }
 }
 
@@ -288,13 +309,13 @@ function formatTimestamp(ts: string): string {
   if (Number.isNaN(ms)) return ts;
   const delta = Date.now() - ms;
   const sec = Math.floor(delta / 1000);
-  if (sec < 5) return "just now";
-  if (sec < 60) return `${sec}s ago`;
+  if (sec < 5) return "just now · 刚刚";
+  if (sec < 60) return `${sec}s ago · ${sec}秒前`;
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min}m ago`;
+  if (min < 60) return `${min}m ago · ${min}分钟前`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ago`;
+  if (hr < 24) return `${hr}h ago · ${hr}小时前`;
   const days = Math.floor(hr / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return `${days}d ago · ${days}天前`;
   return new Date(ms).toLocaleDateString();
 }

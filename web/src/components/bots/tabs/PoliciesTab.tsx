@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError } from "../../../api/client";
+import { bilingual } from "../../../lib/bilingual";
 import {
   createPolicy,
   deactivatePolicy,
@@ -66,11 +67,11 @@ function PolicyRow({
           </span>
           {global ? (
             <span className="bot-policy-badge bot-policy-badge--scope">
-              all bots
+              {bilingual("all bots", "所有机器人")}
             </span>
           ) : (
             <span className="bot-policy-badge bot-policy-badge--scope bot-policy-badge--scoped">
-              scoped
+              {bilingual("scoped", "已限定")}
             </span>
           )}
         </div>
@@ -84,7 +85,7 @@ function PolicyRow({
             onClick={() => onUnassign(policy.id)}
             title="Remove this policy from this bot"
           >
-            Remove from @{agentSlug}
+            {bilingual(`Remove from @${agentSlug}`, `从 @${agentSlug} 移除`)}
           </button>
         ) : global ? (
           <button
@@ -94,7 +95,7 @@ function PolicyRow({
             onClick={() => onUnassign(policy.id)}
             title="Exclude this bot from the policy"
           >
-            Exclude @{agentSlug}
+            {bilingual(`Exclude @${agentSlug}`, `排除 @${agentSlug}`)}
           </button>
         ) : null}
         <button
@@ -104,7 +105,7 @@ function PolicyRow({
           onClick={() => onDeactivate(policy.id)}
           title="Deactivate this policy"
         >
-          Deactivate
+          {bilingual("Deactivate", "停用")}
         </button>
       </div>
     </div>
@@ -199,7 +200,7 @@ export function PoliciesTab({ agentSlug }: PoliciesTabProps) {
   return (
     <div className="bot-policies-tab" data-testid="policies-tab">
       <div className="bot-policies-header">
-        <h2 className="bot-policies-title">Policies</h2>
+        <h2 className="bot-policies-title">{bilingual("Policies", "策略")}</h2>
         <p className="bot-policies-subtitle">
           Rules that govern how @{agentSlug} behaves. Global policies apply to
           all agents; scoped policies apply only to those listed.
@@ -225,7 +226,7 @@ export function PoliciesTab({ agentSlug }: PoliciesTabProps) {
               }
             }}
             disabled={addMutation.isPending}
-            aria-label="New policy rule"
+            aria-label={bilingual("New policy rule", "新建策略规则")}
           />
           <button
             type="button"
@@ -233,7 +234,9 @@ export function PoliciesTab({ agentSlug }: PoliciesTabProps) {
             disabled={!newRule.trim() || addMutation.isPending}
             onClick={() => addMutation.mutate(newRule.trim())}
           >
-            {addMutation.isPending ? "Adding…" : "Add policy"}
+            {addMutation.isPending
+              ? bilingual("Adding…", "添加中…")
+              : bilingual("Add policy", "添加策略")}
           </button>
         </div>
         {addError ? (
@@ -251,7 +254,7 @@ export function PoliciesTab({ agentSlug }: PoliciesTabProps) {
 
       {/* Policy list */}
       {isLoading ? (
-        <p className="bot-policies-empty">Loading policies…</p>
+        <p className="bot-policies-empty">{bilingual("Loading policies…", "正在加载策略…")}</p>
       ) : isError ? (
         <p className="bot-policies-error" role="alert">
           Couldn't load policies. Check your connection and try again.

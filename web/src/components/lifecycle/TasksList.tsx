@@ -139,9 +139,9 @@ function UnassignedChip({
       data-testid="issues-unassigned-chip"
       aria-pressed={active}
       onClick={onToggle}
-      title={active ? "Show all tasks" : "Show only tasks nobody owns"}
+      title={active ? "Show all tasks · 显示全部任务" : "Show only tasks nobody owns · 仅显示未分配任务"}
     >
-      {count} unassigned
+      {count} unassigned · 未分配
     </button>
   );
 }
@@ -150,13 +150,13 @@ function UnassignedChip({
  *  column is fed by routines, not lifecycle_state, so its hint reflects
  *  that. */
 const STAGE_HINT: Record<LifecycleStage, string> = {
-  scheduled: "Recurring scheduled tasks",
-  backlog: "Parked or awaiting staffing",
-  in_progress: "Owner bot working — includes revising",
-  blocked: "Waiting on an upstream task, or owner stopped",
-  needs_human: "Decisions, bot questions, and reviews waiting on you",
-  done: "Landed",
-  archive: "Filed away — archived or rejected",
+  scheduled: "Recurring scheduled tasks · 循环定时任务",
+  backlog: "Parked or awaiting staffing · 待排期或待分配",
+  in_progress: "Owner bot working — includes revising · 负责人正在处理",
+  blocked: "Waiting on an upstream task, or owner stopped · 等待上游或负责人已停止",
+  needs_human: "Decisions, bot questions, and reviews waiting on you · 等待你的决定、答复或审核",
+  done: "Landed · 已完成",
+  archive: "Filed away — archived or rejected · 已归档或已拒绝",
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────
@@ -793,14 +793,14 @@ export function TasksList({
   return (
     <div className="issues-list issues-list--kanban" data-testid="issues-list">
       <header className="issues-list-header">
-        <h2 className="issues-list-heading">Tasks</h2>
+        <h2 className="issues-list-heading">Tasks · 任务</h2>
         <input
           type="search"
           className="issues-list-search"
-          placeholder="Filter…"
+          placeholder="Filter… · 筛选…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Filter tasks"
+          aria-label="Filter tasks · 筛选任务"
           data-testid="issues-list-search"
         />
         <UnassignedChip
@@ -813,7 +813,7 @@ export function TasksList({
           className="issues-new-btn issues-new-btn--header"
           onClick={() => setCreateOpen(true)}
           data-testid="issues-new-btn"
-          title="Create a new task"
+          title="Create a new task · 新建任务"
         >
           + New task
         </button>

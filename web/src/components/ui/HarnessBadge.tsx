@@ -24,6 +24,11 @@ type GlyphDef = {
 };
 
 const GLYPHS: Record<HarnessKind, GlyphDef> = {
+  antigravity: {
+    bg: "#4285F4",
+    viewBox: "0 0 24 24",
+    body: <path d="M5 19L12 5l7 14M8 14h8" stroke="#FFFFFF" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />,
+  },
   "claude-code": {
     bg: "#D97757",
     viewBox: "0 0 24 24",

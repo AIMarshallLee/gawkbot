@@ -58,7 +58,7 @@ export function UsagePanel() {
         >
           <path d="m9 18 6-6-6-6" />
         </svg>
-        Usage
+        Usage · 用量
         <span
           style={{ marginLeft: "auto", fontWeight: 400 }}
           data-testid="usage-pill-cost"
@@ -76,14 +76,14 @@ export function UsagePanel() {
                 padding: "4px 0",
               }}
             >
-              No usage recorded yet.
+              No usage recorded yet. · 暂无用量记录。
             </p>
           ) : (
             <>
               <table className="usage-table">
                 <thead>
                   <tr>
-                    {["Bot", "In", "Out", "Cache", "Cost"].map((h) => (
+                    {["Bot · 机器人", "In · 输入", "Out · 输出", "Cache · 缓存", "Cost · 费用"].map((h) => (
                       <th key={h}>{h}</th>
                     ))}
                   </tr>
@@ -105,8 +105,8 @@ export function UsagePanel() {
               </table>
               <div className="usage-total">
                 <span>
-                  Session: {formatTokens(usage?.session?.total_tokens ?? 0)}{" "}
-                  tokens
+                  Session · 会话: {formatTokens(usage?.session?.total_tokens ?? 0)}{" "}
+                  tokens · 令牌
                 </span>
                 <span
                   className="usage-total-cost"

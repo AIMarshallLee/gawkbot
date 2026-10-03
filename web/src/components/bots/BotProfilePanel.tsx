@@ -39,12 +39,16 @@ import { useAppStore } from "../../stores/app";
 import { HarnessBadge } from "../ui/HarnessBadge";
 import { PixelAvatar } from "../ui/PixelAvatar";
 import { showNotice } from "../ui/Toast";
+import { Bilingual } from "../ui/Bilingual";
 import { BotInstructionsSection } from "./BotInstructionsSection";
 
 const PROVIDER_LABELS: Record<LLMRuntimeKind, string> = {
   "claude-code": "Claude Code",
   codex: "Codex",
   opencode: "Opencode",
+  antigravity: "Antigravity · Google 会员",
+  "antigravity-2": "Antigravity 备用 · Google 会员 2号",
+  custom: "Custom API · 自定义模型",
   "mlx-lm": "MLX-LM",
   ollama: "Ollama",
   exo: "Exo",
@@ -78,7 +82,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <div className="bot-profile-section-title">{children}</div>;
 }
 
-function EmptyRow({ label }: { label: string }) {
+function EmptyRow({ label }: { label: React.ReactNode }) {
   return <div className="bot-profile-empty">{label}</div>;
 }
 
@@ -87,10 +91,11 @@ function StatusBadge({ status }: { status: string | undefined }) {
   let cls = "bot-profile-status-badge";
   if (s === "active") cls += " active";
   else if (s === "paused") cls += " paused";
+  const zh = s === "active" ? "活跃" : s === "paused" ? "已暂停" : "空闲";
   return (
     <span className={cls}>
       <span className="bot-profile-status-dot" />
-      {s}
+      <Bilingual layout="inline" en={s} zh={zh} />
     </span>
   );
 }
@@ -112,9 +117,15 @@ function SkillsSection({
 
   return (
     <div className="bot-profile-section">
-      <SectionTitle>skills</SectionTitle>
+      <SectionTitle>
+        <Bilingual layout="inline" en="skills" zh="技能" />
+      </SectionTitle>
       {active.length === 0 ? (
-        <EmptyRow label="No skills yet" />
+        <EmptyRow
+          label={
+            <Bilingual layout="inline" en="No skills yet" zh="暂无技能" />
+          }
+        />
       ) : (
         <ul className="bot-profile-list">
           {active.map((sk) => (
@@ -124,7 +135,7 @@ function SkillsSection({
               </span>
               {sk.status === "proposed" && (
                 <span className="badge badge-yellow bot-profile-badge">
-                  pending
+                  <Bilingual layout="inline" en="pending" zh="待审" />
                 </span>
               )}
             </li>
@@ -148,9 +159,15 @@ function ChannelsSection({
 
   return (
     <div className="bot-profile-section">
-      <SectionTitle>channels</SectionTitle>
+      <SectionTitle>
+        <Bilingual layout="inline" en="channels" zh="所属频道" />
+      </SectionTitle>
       {memberOf.length === 0 ? (
-        <EmptyRow label="No channels" />
+        <EmptyRow
+          label={
+            <Bilingual layout="inline" en="No channels" zh="暂无频道" />
+          }
+        />
       ) : (
         <div className="bot-profile-chips">
           {memberOf.map((ch) => (
@@ -185,17 +202,29 @@ function RecentRunsSection({ runs, loading }: RecentRunsSectionProps) {
   if (loading) {
     return (
       <div className="bot-profile-section">
-        <SectionTitle>recent runs</SectionTitle>
-        <EmptyRow label="Loading..." />
+        <SectionTitle>
+          <Bilingual layout="inline" en="recent runs" zh="最近运行" />
+        </SectionTitle>
+        <EmptyRow
+          label={
+            <Bilingual layout="inline" en="Loading..." zh="加载中..." />
+          }
+        />
       </div>
     );
   }
 
   return (
     <div className="bot-profile-section">
-      <SectionTitle>recent runs</SectionTitle>
+      <SectionTitle>
+        <Bilingual layout="inline" en="recent runs" zh="最近运行" />
+      </SectionTitle>
       {botRuns.length === 0 ? (
-        <EmptyRow label="No runs yet" />
+        <EmptyRow
+          label={
+            <Bilingual layout="inline" en="No runs yet" zh="暂无运行记录" />
+          }
+        />
       ) : (
         <ul className="bot-profile-list">
           {botRuns.map((r) => (
@@ -225,7 +254,7 @@ function RecentRunsSection({ runs, loading }: RecentRunsSectionProps) {
             })
           }
         >
-          See all activity
+          <Bilingual layout="inline" en="See all activity" zh="查看全部活动" />
         </button>
       )}
     </div>
@@ -289,9 +318,15 @@ function RecentArtifactsSection({ agentSlug, tasks }: RecentTasksSectionProps) {
 
   return (
     <div className="bot-profile-section">
-      <SectionTitle>recent tasks</SectionTitle>
+      <SectionTitle>
+        <Bilingual layout="inline" en="recent tasks" zh="最近任务" />
+      </SectionTitle>
       {botTasks.length === 0 ? (
-        <EmptyRow label="No recent tasks" />
+        <EmptyRow
+          label={
+            <Bilingual layout="inline" en="No recent tasks" zh="暂无最近任务" />
+          }
+        />
       ) : (
         <ul className="bot-profile-list">
           {botTasks.map((t) => (
@@ -314,14 +349,14 @@ function RecentArtifactsSection({ agentSlug, tasks }: RecentTasksSectionProps) {
                 <button
                   type="button"
                   className="bot-profile-resume-btn"
-                  title="Re-engage this bot on the task if it has gone quiet"
+                  title="Re-engage this bot on the task if it has gone quiet · 若机器人无响应，唤醒其继续执行该任务"
                   disabled={resumeMutation.isPending}
                   onClick={() => resumeMutation.mutate(t)}
                 >
                   {resumeMutation.isPending &&
                   resumeMutation.variables?.id === t.id
-                    ? "Resuming…"
-                    : "Resume"}
+                    ? "Resuming… · 正在恢复…"
+                    : "Resume · 恢复执行"}
                 </button>
               ) : null}
             </li>
@@ -352,24 +387,44 @@ function PermissionsSection({ agent }: { agent: OfficeMember }) {
 
   return (
     <div className="bot-profile-section">
-      <SectionTitle>permissions</SectionTitle>
+      <SectionTitle>
+        <Bilingual layout="inline" en="permissions" zh="权限说明" />
+      </SectionTitle>
       <div className="bot-profile-permissions">
         <div className="bot-profile-perm-row">
-          <span className="bot-profile-perm-label">role</span>
+          <span className="bot-profile-perm-label">
+            <Bilingual layout="inline" en="role" zh="角色" />
+          </span>
           <span className="bot-profile-perm-value">
-            {isLead ? "lead bot" : "team member"}
+            {isLead ? (
+              <Bilingual layout="inline" en="lead bot" zh="主管机器人" />
+            ) : (
+              <Bilingual layout="inline" en="team member" zh="团队成员" />
+            )}
           </span>
         </div>
         <div className="bot-profile-perm-row">
-          <span className="bot-profile-perm-label">removable</span>
+          <span className="bot-profile-perm-label">
+            <Bilingual layout="inline" en="removable" zh="可移除" />
+          </span>
           <span className="bot-profile-perm-value">
-            {isLead ? "no" : "yes"}
+            {isLead ? (
+              <Bilingual layout="inline" en="no" zh="否" />
+            ) : (
+              <Bilingual layout="inline" en="yes" zh="是" />
+            )}
           </span>
         </div>
         <div className="bot-profile-perm-row">
-          <span className="bot-profile-perm-label">built-in</span>
+          <span className="bot-profile-perm-label">
+            <Bilingual layout="inline" en="built-in" zh="内置" />
+          </span>
           <span className="bot-profile-perm-value">
-            {isLead ? "yes" : "no"}
+            {isLead ? (
+              <Bilingual layout="inline" en="yes" zh="是" />
+            ) : (
+              <Bilingual layout="inline" en="no" zh="否" />
+            )}
           </span>
         </div>
       </div>
@@ -602,9 +657,13 @@ function RuntimeSection({
     const gatewayLabel = GATEWAY_LABELS[gatewayKind] || gatewayKind;
     return (
       <div className="bot-profile-section op-runtime">
-        <SectionTitle>runtime</SectionTitle>
+        <SectionTitle>
+          <Bilingual layout="inline" en="runtime" zh="运行时引擎" />
+        </SectionTitle>
         <div className="op-runtime-grid">
-          <span className="op-runtime-label">managed by</span>
+          <span className="op-runtime-label">
+            <Bilingual layout="inline" en="managed by" zh="受管于" />
+          </span>
           <span className="op-runtime-value">
             <span className="op-runtime-managed">
               <Lock width={11} height={11} />
@@ -613,7 +672,9 @@ function RuntimeSection({
           </span>
           {!!binding.model && (
             <>
-              <span className="op-runtime-label">model</span>
+              <span className="op-runtime-label">
+                <Bilingual layout="inline" en="model" zh="模型" />
+              </span>
               <span
                 className="op-runtime-value"
                 style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}
@@ -624,8 +685,11 @@ function RuntimeSection({
           )}
         </div>
         <p className="op-runtime-note">
-          This bot was imported through the {gatewayLabel} gateway. Change its
-          runtime from the Integrations app.
+          <Bilingual
+            layout="stacked"
+            en={`This bot was imported through the ${gatewayLabel} gateway. Change its runtime from the Integrations app.`}
+            zh={`此机器人通过 ${gatewayLabel} 网关导入。请前往“集成”应用修改其运行时。`}
+          />
         </p>
       </div>
     );
@@ -637,16 +701,22 @@ function RuntimeSection({
 
   return (
     <div className="bot-profile-section op-runtime">
-      <SectionTitle>runtime</SectionTitle>
+      <SectionTitle>
+        <Bilingual layout="inline" en="runtime" zh="运行时引擎" />
+      </SectionTitle>
       <div className="op-runtime-grid">
-        <span className="op-runtime-label">harness</span>
+        <span className="op-runtime-label">
+          <Bilingual layout="inline" en="harness" zh="运行环境" />
+        </span>
         <span
           className="op-runtime-value"
           style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}
         >
           {harness}
         </span>
-        <span className="op-runtime-label">provider</span>
+        <span className="op-runtime-label">
+          <Bilingual layout="inline" en="provider" zh="模型厂商" />
+        </span>
         <span className="op-runtime-value">
           <select
             value={draftKind}
@@ -655,7 +725,9 @@ function RuntimeSection({
               setDraftKind(e.target.value as "" | LLMRuntimeKind)
             }
           >
-            <option value="">Inherit default ({globalDefault})</option>
+            <option value="">
+              Inherit default ({globalDefault}) · 继承默认 ({globalDefault})
+            </option>
             {llmKinds.map((kind) => (
               <option key={kind} value={kind}>
                 {PROVIDER_LABELS[kind] ?? kind}
@@ -663,7 +735,9 @@ function RuntimeSection({
             ))}
           </select>
         </span>
-        <span className="op-runtime-label">model</span>
+        <span className="op-runtime-label">
+          <Bilingual layout="inline" en="model" zh="模型" />
+        </span>
         <span className="op-runtime-value">
           <ModelPicker
             kind={draftKind}
@@ -676,8 +750,11 @@ function RuntimeSection({
       </div>
       {draftKind === "" && (
         <p className="op-runtime-note">
-          Inheriting the install default ({globalDefault}). Pick a specific
-          runtime here to pin this agent.
+          <Bilingual
+            layout="stacked"
+            en={`Inheriting the install default (${globalDefault}). Pick a specific runtime here to pin this agent.`}
+            zh={`当前继承系统默认配置 (${globalDefault})。可在此处指定专属运行时以固定该机器人配置。`}
+          />
         </p>
       )}
       {!!saveError && (
@@ -702,7 +779,7 @@ function RuntimeSection({
               setSaveError(null);
             }}
           >
-            Reset
+            <Bilingual layout="inline" en="Reset" zh="重置" />
           </button>
           <button
             type="button"
@@ -710,7 +787,7 @@ function RuntimeSection({
             disabled={!dirty || mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {mutation.isPending ? "Saving..." : "Save runtime"}
+            {mutation.isPending ? "Saving… · 正在保存…" : <Bilingual layout="inline" en="Save runtime" zh="保存运行时" />}
           </button>
         </div>
       )}
@@ -962,7 +1039,9 @@ export function BotProfilePanel({
         {/* Role / description */}
         {agent.role ? (
           <div className="bot-profile-section">
-            <SectionTitle>role</SectionTitle>
+            <SectionTitle>
+              <Bilingual layout="inline" en="role" zh="职责" />
+            </SectionTitle>
             <p className="bot-profile-role-text">{agent.role}</p>
           </div>
         ) : null}
@@ -970,7 +1049,9 @@ export function BotProfilePanel({
         {/* Current task */}
         {agent.task && agent.status === "active" ? (
           <div className="bot-profile-section">
-            <SectionTitle>current task</SectionTitle>
+            <SectionTitle>
+              <Bilingual layout="inline" en="current task" zh="当前任务" />
+            </SectionTitle>
             <p className="bot-profile-current-task">
               {humanizeActivity(agent.task)}
             </p>

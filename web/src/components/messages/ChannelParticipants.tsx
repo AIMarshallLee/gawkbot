@@ -29,11 +29,11 @@ function memberDisplayName(member: OfficeMember): string {
 // humanizeActivity (lib/humanizeActivity.ts) collapses anything
 // machine-shaped to "Working…" and passes genuine prose through.
 function memberActivity(member: OfficeMember): string {
-  if (member.disabled) return "Disabled in this channel";
+  if (member.disabled) return "Disabled in this channel · 在此频道已禁用";
   const live =
     member.liveActivity?.trim() || member.task?.trim() || member.detail?.trim();
   if (live) return humanizeActivity(live);
-  return member.role?.trim() || "Idle";
+  return member.role?.trim() || "Idle · 空闲";
 }
 
 function sortParticipants(a: OfficeMember, b: OfficeMember): number {
@@ -83,7 +83,7 @@ function nextToggleAction(member: OfficeMember): ChannelMemberAction {
 
 function toggleLabel(action: ChannelMemberAction, pending: boolean): string {
   if (pending) return "...";
-  return action === "enable" ? "Enable" : "Disable";
+  return action === "enable" ? "Enable · 启用" : "Disable · 禁用";
 }
 
 function participantNotice(
@@ -127,7 +127,7 @@ function AddParticipantMenu({
     >
       {agents.length === 0 ? (
         <div className="channel-participants-empty">
-          All bots are already here
+          All bots are already here · 所有机器人均已加入
         </div>
       ) : (
         agents.map((member) => {
@@ -235,7 +235,7 @@ function ParticipantRow({
               : `Remove ${displayName} from this channel`
           }
         >
-          {removePending ? "..." : "Remove"}
+          {removePending ? "..." : "Remove · 移除"}
         </button>
       </span>
     </div>
@@ -336,11 +336,11 @@ export function ChannelParticipants({ channelSlug }: ChannelParticipantsProps) {
     <aside className="channel-participants" aria-label="Channel participants">
       <div className="channel-participants-header">
         <div>
-          <div className="channel-participants-title">Participants</div>
+          <div className="channel-participants-title">Participants · 成员列表</div>
           <div className="channel-participants-subtitle">
             {isLoading
-              ? "Loading bots"
-              : `${agents.length} ${agents.length === 1 ? "bot" : "bots"}`}
+              ? "Loading bots… · 正在加载机器人…"
+              : `${agents.length} ${agents.length === 1 ? "bot" : "bots"} · ${agents.length} 个机器人`}
           </div>
         </div>
         <button
@@ -350,7 +350,7 @@ export function ChannelParticipants({ channelSlug }: ChannelParticipantsProps) {
           aria-expanded={addOpen}
           aria-controls="channel-participants-add-menu"
           aria-label={`Add participant to #${channelSlug}`}
-          title="Add participant"
+          title="Add participant · 添加成员"
         >
           +
         </button>
@@ -378,7 +378,7 @@ export function ChannelParticipants({ channelSlug }: ChannelParticipantsProps) {
 
         {!isLoading && agents.length === 0 ? (
           <div className="channel-participants-empty">
-            No bots in this channel
+            No bots in this channel · 此频道暂无机器人
           </div>
         ) : null}
       </div>

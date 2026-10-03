@@ -58,10 +58,23 @@ func defaultHeadlessCodexRunTurn(l *Launcher, ctx context.Context, slug, notific
 		err = l.runHeadlessCodexTurn(ctx, slug, notification, channel...)
 	case kind == provider.KindOpencode:
 		err = l.runHeadlessOpencodeTurn(ctx, slug, notification, channel...)
+	case kind == provider.KindAntigravity:
+		err = l.runHeadlessAntigravityTurn(ctx, slug, notification, channel...)
+		if err != nil && isAntigravityQuotaError(err) {
+			err = l.runWithFallbackChain(ctx, slug, notification, err, channel...)
+		}
+	case kind == provider.KindAntigravityAlt:
+		err = l.runHeadlessAntigravityAltTurn(ctx, slug, notification, channel...)
+		if err != nil && isAntigravityQuotaError(err) {
+			err = l.runWithFallbackChain(ctx, slug, notification, err, channel...)
+		}
 	case isOpenAICompatKind(kind):
 		err = l.runHeadlessOpenAICompatTurn(ctx, slug, notification, channel...)
 	default:
 		err = l.runHeadlessClaudeTurn(ctx, slug, notification, channel...)
+		if err != nil && isClaudeQuotaError(err) {
+			err = l.runWithFallbackChain(ctx, slug, notification, err, channel...)
+		}
 	}
 	// After a task-less (inline / chat) turn, run inline workflow→App detection:
 	// the post-task hook only fires on a task reaching done, so work the CEO did

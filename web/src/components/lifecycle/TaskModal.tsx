@@ -43,6 +43,7 @@ import {
 } from "./LifecycleStatePill";
 import { OwnerPicker } from "./OwnerPicker";
 import { TaskActionToolbar } from "./TaskActionToolbar";
+import { TranslateButton } from "../ui/TranslateButton";
 import { useTaskRecord } from "./useTaskRecord";
 
 /** The task's own description text, whichever field the broker filled. */
@@ -196,7 +197,7 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
   function save() {
     if (!isDirty || saveMutation.isPending) return;
     if (!trimmedTitle) {
-      setSaveError("A task needs a name.");
+      setSaveError("任务名称不能为空。(A task needs a name.)");
       return;
     }
     setSaveError(null);
@@ -229,7 +230,7 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
 
       <div className="task-modal-fields">
         <label className="task-modal-label" htmlFor={titleFieldId}>
-          Name
+          任务名称 · Name
         </label>
         <input
           id={titleFieldId}
@@ -237,27 +238,35 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
           className="task-modal-title-input"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Task name"
+          placeholder="输入任务名称…"
           autoComplete="off"
           data-testid="task-modal-title"
         />
 
-        <label className="task-modal-label" htmlFor={descriptionFieldId}>
-          Description
-        </label>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, marginBottom: 4 }}>
+          <label className="task-modal-label" htmlFor={descriptionFieldId} style={{ margin: 0 }}>
+            任务描述 · Description
+          </label>
+          {description.trim() ? (
+            <TranslateButton
+              originalText={description}
+              onToggle={(_isZh, text) => setDescription(text)}
+            />
+          ) : null}
+        </div>
         <textarea
           id={descriptionFieldId}
           className="task-modal-description-input"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Add a description…"
+          placeholder="添加任务详细说明、背景或要求…"
           rows={6}
           data-testid="task-modal-description"
         />
       </div>
 
       <div className="task-modal-row">
-        <span className="task-modal-label">Owner</span>
+        <span className="task-modal-label">负责人 · Owner</span>
         <OwnerPicker
           taskId={task.id}
           channel={channel}
@@ -267,7 +276,7 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
       </div>
 
       <div className="task-modal-row task-modal-row--stack">
-        <span className="task-modal-label">Status</span>
+        <span className="task-modal-label">状态 · Status</span>
         <TaskActionToolbar
           taskId={task.id}
           channel={channel}
@@ -293,7 +302,7 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
           onClick={openFullPage}
           data-testid="task-modal-open-page"
         >
-          Open full task page
+          打开完整任务页面 · Open full task page
         </button>
         <div className="task-modal-actions">
           <button
@@ -302,7 +311,7 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
             onClick={onClose}
             data-testid="task-modal-close"
           >
-            Close
+            关闭 · Close
           </button>
           <button
             type="button"
@@ -311,7 +320,7 @@ function TaskModalBody({ task, onClose }: { task: Task; onClose: () => void }) {
             disabled={!isDirty || saveMutation.isPending}
             data-testid="task-modal-save"
           >
-            {saveMutation.isPending ? "Saving…" : "Save"}
+            {saveMutation.isPending ? "保存中… · Saving…" : "保存 · Save"}
           </button>
         </div>
       </footer>

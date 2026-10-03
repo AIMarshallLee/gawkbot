@@ -266,7 +266,7 @@ function ActiveRunsSection({
 }: ActiveRunsSectionProps) {
   return (
     <OverviewSection
-      title="Active runs"
+      title="Active runs · 进行中的任务"
       count={count ?? tasks.length}
       id="active-runs"
       action={
@@ -282,7 +282,7 @@ function ActiveRunsSection({
           tasks={tasks}
           limit={5}
           onTaskClick={goToTask}
-          emptyLabel="No tasks are running right now."
+          emptyLabel="No tasks are running right now. · 当前没有运行中的任务。"
         />
       )}
     </OverviewSection>
@@ -303,7 +303,7 @@ function BlockedTasksSection({
 }: BlockedTasksSectionProps) {
   return (
     <OverviewSection
-      title="Blocked tasks"
+      title="Blocked tasks · 受阻任务"
       count={count ?? tasks.length}
       id="blocked-tasks"
       action={
@@ -320,7 +320,7 @@ function BlockedTasksSection({
           badgeClass="badge badge-yellow"
           limit={5}
           onTaskClick={goToTask}
-          emptyLabel="Nothing is blocked. Bots are moving freely."
+          emptyLabel="Nothing is blocked. Bots are moving freely. · 当前没有受阻任务。"
         />
       )}
     </OverviewSection>
@@ -341,7 +341,7 @@ function BotsWorkingSection({
 }: BotsWorkingSectionProps) {
   return (
     <OverviewSection
-      title="Bots working now"
+      title="Bots working now · 正在工作的机器人"
       count={count ?? agents.length}
       id="agents-working"
     >
@@ -365,7 +365,7 @@ function PendingReviewsSection({
 }: PendingReviewsSectionProps) {
   return (
     <OverviewSection
-      title="Pending reviews"
+      title="Pending reviews · 待审核"
       count={requests.length}
       id="pending-reviews"
       action={
@@ -377,7 +377,7 @@ function PendingReviewsSection({
       {isLoading ? (
         <SkeletonRows count={2} />
       ) : requests.length === 0 ? (
-        <EmptyState action={{ label: "Go to requests", onClick: goToRequests }}>
+        <EmptyState action={{ label: "Go to requests · 前往请求", onClick: goToRequests }}>
           No pending requests from bots.
         </EmptyState>
       ) : (
@@ -420,7 +420,7 @@ function CompiledSkillsSection({
 }: CompiledSkillsSectionProps) {
   return (
     <OverviewSection
-      title="Compiled skills"
+      title="Compiled skills · 已编译技能"
       count={skills.length}
       id="compiled-skills"
       action={
@@ -432,7 +432,7 @@ function CompiledSkillsSection({
       {isLoading ? (
         <SkeletonRows count={2} />
       ) : skills.length === 0 ? (
-        <EmptyState action={{ label: "Go to skills", onClick: goToSkills }}>
+        <EmptyState action={{ label: "Go to skills · 前往技能", onClick: goToSkills }}>
           No compiled skills yet. Skills are compiled from playbook articles in
           the wiki.
         </EmptyState>
@@ -469,7 +469,7 @@ interface ScheduledJobsSectionProps {
 function ScheduledJobsSection({ jobs, isLoading }: ScheduledJobsSectionProps) {
   return (
     <OverviewSection
-      title="Next scheduled routines"
+      title="Next scheduled routines · 下次定时例程"
       count={jobs.length}
       id="scheduled-jobs"
       action={
@@ -481,7 +481,7 @@ function ScheduledJobsSection({ jobs, isLoading }: ScheduledJobsSectionProps) {
       {isLoading ? (
         <SkeletonRows count={3} />
       ) : jobs.length === 0 ? (
-        <EmptyState action={{ label: "Go to routines", onClick: goToCalendar }}>
+        <EmptyState action={{ label: "Go to routines · 前往例程", onClick: goToCalendar }}>
           No upcoming scheduled routines.
         </EmptyState>
       ) : (
@@ -520,7 +520,7 @@ function RecentArtifactsSection({
 }: RecentArtifactsSectionProps) {
   return (
     <OverviewSection
-      title="Recent artifacts"
+      title="Recent artifacts · 最近产物"
       count={tasks.length}
       id="recent-artifacts"
       action={
@@ -582,7 +582,7 @@ export function OfficeOverviewApp() {
         }}
       >
         <div>
-          <h3 style={{ fontSize: 18, fontWeight: 700 }}>Office overview</h3>
+          <h3 style={{ fontSize: 18, fontWeight: 700 }}>Office overview · 办公室概览</h3>
           <div
             style={{
               fontSize: 13,
@@ -590,7 +590,7 @@ export function OfficeOverviewApp() {
               marginTop: 4,
             }}
           >
-            What is active, blocked, and ready for review right now.
+            What is active, blocked, and ready for review right now. · 查看当前进行中、受阻和待审核的事项。
           </div>
         </div>
         <div
@@ -668,7 +668,7 @@ function ConnectedProvidersSection({
   return (
     <section
       id="connected-providers"
-      aria-label="Connected providers"
+      aria-label="Connected providers · 已连接的提供商"
       style={{
         background: "var(--green-bg)",
         border: "1px solid var(--border)",
@@ -692,11 +692,11 @@ function ConnectedProvidersSection({
           }}
         >
           {providers.length} provider{providers.length !== 1 ? "s" : ""}{" "}
-          connected
+          connected · 已连接
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <SectionLink onClick={goToSettings}>Settings</SectionLink>
-          <SectionLink onClick={goToHealthCheck}>Provider Doctor</SectionLink>
+          <SectionLink onClick={goToSettings}>Settings · 设置</SectionLink>
+          <SectionLink onClick={goToHealthCheck}>Provider Doctor · 提供商诊断</SectionLink>
         </div>
       </div>
       {providers.map((p) => (
@@ -721,7 +721,7 @@ function ConnectedProvidersSection({
             }}
           />
           <strong>{p.label}</strong>
-          {" — ready"}
+          {" — ready · 就绪"}
           <span style={{ color: "var(--text-tertiary)", fontSize: 11 }}>
             ({p.desc})
           </span>
@@ -735,7 +735,7 @@ function ConnectedProvidersSection({
         }}
       >
         Task creation and runtime switching only show configured providers that
-        pass connection checks.
+        pass connection checks. · 新建任务和切换运行时仅显示已配置且通过连接检查的提供商。
       </div>
     </section>
   );

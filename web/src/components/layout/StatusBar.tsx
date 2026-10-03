@@ -10,6 +10,7 @@ import {
 } from "../../api/upgrade";
 import { useOfficeMembers } from "../../hooks/useMembers";
 import { appTitle } from "../../lib/constants";
+import { bilingual } from "../../lib/bilingual";
 import { useCurrentRoute } from "../../routes/useCurrentRoute";
 import { useAppStore } from "../../stores/app";
 import { Kbd } from "../ui/Kbd";
@@ -97,25 +98,25 @@ export function StatusBar() {
       case "wiki-lookup":
         return appTitle("wiki");
       case "article":
-        return "Article";
+        return bilingual("Article", "文章");
       case "inbox":
-        return "Decision Inbox";
+        return bilingual("Decision Inbox", "决策收件箱");
       case "task-decision":
-        return `Task ${route.taskId}`;
+        return bilingual(`Task ${route.taskId}`, `任务 ${route.taskId}`);
       case "task-new":
-        return "New task";
+        return bilingual("New task", "新建任务");
       case "agents":
-        return "Bots";
+        return bilingual("Bots", "机器人");
       case "bot-detail":
         return `@${route.agentSlug}`;
       case "skill-detail":
         return `skill · ${route.skillName}`;
       case "routine-detail":
-        return `Routine ${route.routineSlug}`;
+        return bilingual(`Routine ${route.routineSlug}`, `流程 ${route.routineSlug}`);
       case "routine-new":
-        return "New scheduled task";
+        return bilingual("New scheduled task", "新建定时任务");
       case "home":
-        return "Home";
+        return bilingual("Home", "首页");
       case "unknown":
         return "";
       default: {
@@ -126,7 +127,7 @@ export function StatusBar() {
       }
     }
   })();
-  const modeLabel = "office";
+  const modeLabel = bilingual("office", "办公室");
   const provider = health?.provider;
   const providerModel = health?.provider_model?.trim();
 
@@ -166,14 +167,14 @@ export function StatusBar() {
         type="button"
         className="status-bar-shortcut"
         onClick={() => setComposerHelpOpen(true)}
-        title="Keyboard shortcuts"
-        aria-label="Open keyboard shortcuts"
+        title={bilingual("Keyboard shortcuts", "键盘快捷键")}
+        aria-label={bilingual("Open keyboard shortcuts", "打开键盘快捷键")}
       >
         <Kbd size="sm">?</Kbd>
-        <span>shortcuts</span>
+        <span>{bilingual("shortcuts", "快捷键")}</span>
       </button>
       <span className="status-bar-item">
-        {botCount} bot{botCount === 1 ? "" : "s"}
+        {bilingual(`${botCount} bot${botCount === 1 ? "" : "s"}`, `${botCount} 个机器人`)}
       </span>
       {provider ? (
         <span
@@ -205,17 +206,17 @@ export function StatusBar() {
         <span>{versionLabel}</span>
       </button>
       {brokerConnected ? (
-        <span className="status-bar-item status-bar-conn">connected</span>
+        <span className="status-bar-item status-bar-conn">{bilingual("connected", "已连接")}</span>
       ) : (
         <button
           type="button"
           className="status-bar-item status-bar-conn status-bar-conn-retry disconnected"
           onClick={handleRestart}
           disabled={retrying}
-          title="Click to restart broker"
-          aria-label={retrying ? "Restarting broker…" : "Restart broker"}
+          title={bilingual("Click to restart broker", "点击重启代理")}
+          aria-label={retrying ? bilingual("Restarting broker…", "正在重启代理…") : bilingual("Restart broker", "重启代理")}
         >
-          {retrying ? "restarting…" : "disconnected"}
+          {retrying ? bilingual("restarting…", "正在重启…") : bilingual("disconnected", "未连接")}
         </button>
       )}
     </div>
