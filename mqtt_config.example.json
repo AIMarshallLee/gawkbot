@@ -1,0 +1,10 @@
+{
+  "_comment": "EMQX Cloud 专属私有集群配置文件模板。实际使用时请复制为 mqtt_config.json 并填入连接信息，mqtt_config.json 已被 .gitignore 忽略保护。",
+  "broker": "xxx.emqx.cloud",
+  "port": 8883,
+  "use_tls": true,
+  "username": "your_username",
+  "password": "your_password",
+  "namespace": "kunlun_growth_prod",
+  "machine_id": "xixi"
+}
