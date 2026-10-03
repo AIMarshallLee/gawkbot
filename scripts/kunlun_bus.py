@@ -100,6 +100,15 @@ def fetch_doc_markdown(doc_id: str) -> str:
     return ""
 
 
+def send_im_notification(markdown_text: str):
+    """通过飞书 IM 向 Marshall Lee 手机端推送实时通知"""
+    try:
+        user_id = "ou_7867f380cf2848b3be9844bb62d33bd0"
+        run_lark_cli(["im", "+messages-send", "--as", "user", "--user-id", user_id, "--markdown", markdown_text])
+    except Exception:
+        pass
+
+
 def append_to_doc(doc_id: str, markdown_content: str) -> bool:
     """向指定文档追加 Markdown 内容。"""
     import os
@@ -184,6 +193,7 @@ def cmd_dispatch(args):
     if ok:
         print(f"[PASS] 工单派发成功！飞书总线已记录：{task_id}")
         print(task_card)
+        send_im_notification(f"📋 **三机新工单派发**\n- **任务ID**: {task_id}\n- **发起源**: {source_info['name']} ➔ **目标机**: {target_info['name']}\n- **任务名**: {args.title}\n- **动作**: {args.action}")
     else:
         print(f"[FAIL] 派发失败，请检查网络或权限。")
 
@@ -255,7 +265,10 @@ def write_task_receipt(doc_id: str, receipt: dict) -> bool:
 - status: {receipt['status']}
 - execution_result: {receipt['detail']}
 """
-    return append_to_doc(doc_id, receipt_snippet)
+    res = append_to_doc(doc_id, receipt_snippet)
+    if res:
+        send_im_notification(f"✅ **三机任务闭环完成**\n- **任务ID**: {receipt['task_id']}\n- **执行机器**: {info['name']}\n- **状态**: {receipt['status']}\n- **结果**: {receipt['detail']}")
+    return res
 
 
 def cmd_tasks(args):
@@ -432,6 +445,7 @@ def cmd_base_add(args):
             print(f"  任务ID: {task_id}")
             print(f"  目标机: {target}")
             print(f"  直达链接: {BITABLE_CONFIG['wiki_url']}")
+            send_im_notification(f"📊 **多维表格任务发布**\n- **任务ID**: {task_id}\n- **目标机**: {target}\n- **任务名**: {args.title}\n- **动作**: {args.action}\n- [直达表格]({BITABLE_CONFIG['wiki_url']})")
         else:
             print(f"[FAIL] 推送失败: {res.get('error')}")
     finally:
